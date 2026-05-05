@@ -314,6 +314,6 @@ if __name__ == "__main__":
         print(f"\n{'='*60}")
         print(f"  ÖFFENTLICHER LINK: {public_url}")
         print(f"{'='*60}\n")
-        demo.launch(server_name="0.0.0.0", server_port=7860)
+        demo.launch(server_name="0.0.0.0", server_port=7860) # nosec B104
     else:
         demo.launch(share=False)

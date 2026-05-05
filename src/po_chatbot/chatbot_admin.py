@@ -41,7 +41,7 @@ def get_queue_display():
         ts = e.get("timestamp", "?")[:19].replace("T", " ")
         fac = e.get("faculty", "?")
         q = e.get("question", "?")[:80]
-        entry_id = e.get("id", str(i))
+        e.get("id", str(i))
         label = f"[{ts}] {fac} — {q}"
         choices.append(label)
         overview_lines.append(f"**{i+1}.** {label}")

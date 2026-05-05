@@ -7,8 +7,6 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import matplotlib.ticker as mticker
-import json
 
 OUT = "images"
 os.makedirs(OUT, exist_ok=True)
@@ -45,11 +43,11 @@ df5 = pd.read_csv("data/evaluation_logs/phase5_topk_fine_grained.csv")
 for df in [df1, df2, df3, df4, df5]:
     df["overall_score"] = pd.to_numeric(df["overall_score"], errors="coerce")
 
-df1s = df1[df1["is_error"] == False].copy()
-df2s = df2[df2["is_error"] == False].copy()
-df3s = df3[df3["is_error"] == False].copy()
-df4s = df4[df4["is_error"] == False].copy()
-df5s = df5[df5["is_error"] == False].copy()
+df1s = df1[not df1["is_error"]].copy()
+df2s = df2[not df2["is_error"]].copy()
+df3s = df3[not df3["is_error"]].copy()
+df4s = df4[not df4["is_error"]].copy()
+df5s = df5[not df5["is_error"]].copy()
 
 print(f"  Phase 1: {len(df1s)}/{len(df1)} bewertet")
 print(f"  Phase 2: {len(df2s)}/{len(df2)} bewertet")

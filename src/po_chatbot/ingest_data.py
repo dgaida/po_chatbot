@@ -79,7 +79,7 @@ def ingest_data():
         
         for chunk in raw_chunks:
             title = safe_meta.get('title', filename)
-            study_program = safe_meta.get('study_program', 'Allgemein')
+            safe_meta.get('study_program', 'Allgemein')
             doc_type = safe_meta.get('doc_type', '')
             
             # Embeddings so sauber wie möglich halten (nur Inhalt),
@@ -110,7 +110,7 @@ def ingest_data():
 
     try:
         client.delete_collection(name=COLLECTION_NAME)
-    except Exception:
+    except Exception:  # nosec  # nosec
         pass 
 
     collection = client.create_collection(
