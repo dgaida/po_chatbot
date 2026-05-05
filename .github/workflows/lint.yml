@@ -36,7 +36,7 @@ jobs:
       - name: Install linting dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ruff black mypy types-PyYAML
+          pip install ruff black mypy types-PyYAML types-requests
 
       - name: Lint with Ruff
         run: |
