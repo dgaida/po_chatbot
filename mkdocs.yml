@@ -1,0 +1,99 @@
+site_name: PO-Chatbot (TH Köln)
+site_url: https://dgaida.github.io/po_chatbot/
+repo_url: https://github.com/dgaida/po_chatbot
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: de
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.share
+    - content.tabs.link
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+plugins:
+  - search
+  - i18n:
+      languages:
+        - locale: de
+          name: Deutsch
+          default: true
+        - locale: en
+          name: English
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src, .]
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_category_heading: true
+  - mermaid2:
+      arguments:
+        theme: 'default'
+  - mike:
+      alias_type: symlink
+
+extra:
+  alternate:
+    - name: Deutsch
+      link: /de/
+      lang: de
+    - name: English
+      link: /en/
+      lang: en
+  version:
+    provider: mike
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true
+
+nav:
+  - Startseite: index.md
+  - Erste Schritte: getting-started.md
+  - Installation: installation.md
+  - Konfiguration: configuration.md
+  - Nutzung: usage/index.md
+  - API-Referenz: api/index.md
+  - Architektur: architecture/index.md
+  - Entwicklung:
+      - Übersicht: development/index.md
+      - Docstring-Guide: development/docstring-guide.md
+      - Versionierung: development/versioning.md
+      - Changelog: development/changelog.md
+  - Fehlerbehebung: troubleshooting.md
+  - Metriken: metrics.md
