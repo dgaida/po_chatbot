@@ -2,7 +2,7 @@
 
 Dieses Projekt implementiert ein Retrieval-Augmented Generation (RAG) System zur Beantwortung von Fragen rund um das Prüfungsrecht an der TH Köln. Es kombiniert semantische Suche (Vektordatenbank) mit Schlüsselwortsuche (BM25), um präzise Informationen aus Prüfungsordnungen zu extrahieren und verständlich aufzubereiten.
 
-![Version](https://img.shields.io/badge/version-0.1.1-blue)
+[![Version](https://img.shields.io/github/v/tag/dgaida/po_chatbot?label=version)](https://github.com/dgaida/po_chatbot/tags)
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code Quality](https://github.com/dgaida/po_chatbot/actions/workflows/lint.yml/badge.svg)](https://github.com/dgaida/po_chatbot/actions/workflows/lint.yml)
@@ -11,6 +11,7 @@ Dieses Projekt implementiert ein Retrieval-Augmented Generation (RAG) System zur
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/dgaida/po_chatbot/graphs/commit-activity)
 ![Last commit](https://img.shields.io/github/last-commit/dgaida/po_chatbot)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://dgaida.github.io/po_chatbot/)
 
 
 ## Features

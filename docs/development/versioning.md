@@ -6,8 +6,8 @@ Dieses Projekt nutzt `mike` zur Verwaltung mehrerer Versionen der Dokumentation 
 
 Wir halten Dokumentation für verschiedene Releases bereit.
 
-- **`latest`**: Zeigt immer auf die Dokumentation des `main` Branches.
-- **`vX.Y.Z`**: Spezifische Versionen, die mit Git-Tags korrespondieren.
+- **`latest`**: Zeigt immer auf die Dokumentation des `main` Branches.  
+- **`vX.Y.Z`**: Spezifische Versionen, die mit Git-Tags korrespondieren.  
 
 ### Neue Version veröffentlichen
 

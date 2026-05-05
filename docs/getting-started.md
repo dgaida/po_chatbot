@@ -6,8 +6,8 @@ Diese Anleitung führt Sie durch den Prozess der Einrichtung und Nutzung des PO-
 
 Stellen Sie sicher, dass die folgende Software installiert ist:
 
-*   **Python 3.11+**
-*   **Ollama** (für die lokale Ausführung des LLM)
+*   **Python 3.11+**  
+*   **Ollama** (für die lokale Ausführung des LLM)  
 
 ## 1. Installation
 

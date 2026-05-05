@@ -8,10 +8,10 @@ Ein RAG-basiertes Chatbot-System zur Beantwortung von Fragen zum Prüfungsrecht 
 
 ## Hauptfunktionen
 
-*   **Hybride Suche**: Kombination aus ChromaDB (Vektorsuche) und BM25 (Schlüsselwortsuche) für höchste Präzision.
-*   **Human-in-the-Loop**: Admin-Interface zur Validierung und Korrektur von KI-Antworten.
-*   **Lokale Ausführung**: Nutzt Ollama (qwen2.5:14b) für datenschutzkonforme Verarbeitung.
-*   **Multilingual Embeddings**: Verwendet `intfloat/multilingual-e5-large` zur semantischen Erfassung.
+*   **Hybride Suche**: Kombination aus ChromaDB (Vektorsuche) und BM25 (Schlüsselwortsuche) für höchste Präzision.  
+*   **Human-in-the-Loop**: Admin-Interface zur Validierung und Korrektur von KI-Antworten.  
+*   **Lokale Ausführung**: Nutzt Ollama (qwen2.5:14b) für datenschutzkonforme Verarbeitung.  
+*   **Multilingual Embeddings**: Verwendet `intfloat/multilingual-e5-large` zur semantischen Erfassung.  
 
 ## Schnelleinstieg
 
@@ -25,6 +25,6 @@ print(res['documents'][0][0])
 
 ## Projektstruktur
 
-*   `src/po_chatbot/`: Kernlogik und UI-Implementierung.
-*   `evaluation/`: Framework zur Qualitätsmessung.
-*   `docs/`: Diese Dokumentation.
+*   `src/po_chatbot/`: Kernlogik und UI-Implementierung.  
+*   `evaluation/`: Framework zur Qualitätsmessung.  
+*   `docs/`: Diese Dokumentation.  

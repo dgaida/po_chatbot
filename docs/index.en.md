@@ -8,10 +8,10 @@ A RAG-based chatbot system for answering questions about exam regulations at TH 
 
 ## Key Features
 
-*   **Hybrid Search**: Combination of ChromaDB (vector search) and BM25 (keyword search) for maximum precision.
-*   **Human-in-the-Loop**: Admin interface for validation and correction of AI responses.
-*   **Local Execution**: Uses Ollama (qwen2.5:14b) for privacy-compliant processing.
-*   **Multilingual Embeddings**: Utilizes `intfloat/multilingual-e5-large` for semantic understanding.
+*   **Hybrid Search**: Combination of ChromaDB (vector search) and BM25 (keyword search) for maximum precision.  
+*   **Human-in-the-Loop**: Admin interface for validation and correction of AI responses.  
+*   **Local Execution**: Uses Ollama (qwen2.5:14b) for privacy-compliant processing.  
+*   **Multilingual Embeddings**: Utilizes `intfloat/multilingual-e5-large` for semantic understanding.  
 
 ## Quickstart
 
@@ -25,6 +25,6 @@ print(res['documents'][0][0])
 
 ## Project Structure
 
-*   `src/po_chatbot/`: Core logic and UI implementation.
-*   `evaluation/`: Framework for quality measurement.
-*   `docs/`: This documentation.
+*   `src/po_chatbot/`: Core logic and UI implementation.  
+*   `evaluation/`: Framework for quality measurement.  
+*   `docs/`: This documentation.  

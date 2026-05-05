@@ -6,8 +6,8 @@ This guide will walk you through the process of setting up and using the PO-Chat
 
 Ensure that the following software is installed:
 
-*   **Python 3.11+**
-*   **Ollama** (for local LLM execution)
+*   **Python 3.11+**  
+*   **Ollama** (for local LLM execution)  
 
 ## 1. Installation
 

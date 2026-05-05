@@ -6,8 +6,8 @@ This project uses `mike` to manage multiple versions of the documentation and `d
 
 We provide documentation for different releases.
 
-- **`latest`**: Always points to the documentation of the `main` branch.
-- **`vX.Y.Z`**: Specific versions that correspond to Git tags.
+- **`latest`**: Always points to the documentation of the `main` branch.  
+- **`vX.Y.Z`**: Specific versions that correspond to Git tags.  
 
 ### Publishing a New Version
 

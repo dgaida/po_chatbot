@@ -26,8 +26,8 @@ def search(self, question: str, faculty_filter: str, top_k: int = 5) -> dict:
 
 ## Anforderungen
 
-1.  **Zusammenfassung**: Eine kurze Einzeilen-Beschreibung am Anfang.
-2.  **Args**: Liste aller Parameter mit Typ und Beschreibung.
-3.  **Returns**: Beschreibung des Rückgabewerts und Typs.
-4.  **Raises**: (Optional) Falls die Funktion spezifische Exceptions wirft.
-5.  **Example**: (Optional) Ein kurzes Code-Beispiel zur Nutzung.
+1.  **Zusammenfassung**: Eine kurze Einzeilen-Beschreibung am Anfang.  
+2.  **Args**: Liste aller Parameter mit Typ und Beschreibung.  
+3.  **Returns**: Beschreibung des Rückgabewerts und Typs.  
+4.  **Raises**: (Optional) Falls die Funktion spezifische Exceptions wirft.  
+5.  **Example**: (Optional) Ein kurzes Code-Beispiel zur Nutzung.  

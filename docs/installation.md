@@ -25,10 +25,10 @@ pip install black ruff pytest interrogate
 ## Systemabhängigkeiten
 
 ### Ollama
-Der Chatbot benötigt [Ollama](https://ollama.ai/) für die lokale Inferenz.
-1. Installieren Sie Ollama für Ihr Betriebssystem.
-2. Starten Sie den Dienst: `ollama serve`.
-3. Laden Sie das Modell: `ollama pull qwen2.5:14b`.
+Der Chatbot benötigt [Ollama](https://ollama.ai/) für die lokale Inferenz.  
+1. Installieren Sie Ollama für Ihr Betriebssystem.  
+2. Starten Sie den Dienst: `ollama serve`.  
+3. Laden Sie das Modell: `ollama pull qwen2.5:14b`.  
 
 ### Vektordatenbank
 ChromaDB wird als Bibliothek installiert und benötigt keine separate Server-Installation, es sei denn, Sie möchten einen Remote-Server nutzen.
