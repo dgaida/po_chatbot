@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/dev/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/deven/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/configuration/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/dev/configuration/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/deven/configuration/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/getting-started/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/dev/getting-started/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/deven/getting-started/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/installation/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/dev/installation/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/deven/installation/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/metrics/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/dev/metrics/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/deven/metrics/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/troubleshooting/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/dev/troubleshooting/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/deven/troubleshooting/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/api/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/dev/api/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/deven/api/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/architecture/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/dev/architecture/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/deven/architecture/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/development/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/dev/development/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/deven/development/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/development/changelog/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/dev/development/changelog/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/deven/development/changelog/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/development/docstring-guide/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/dev/development/docstring-guide/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/deven/development/docstring-guide/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/development/versioning/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/dev/development/versioning/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/deven/development/versioning/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/usage/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/dev/usage/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/deven/usage/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/en/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/dev/en/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/dev"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/en/configuration/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/dev/en/configuration/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/devconfiguration/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/en/getting-started/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/dev/en/getting-started/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/devgetting-started/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/en/installation/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/dev/en/installation/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/devinstallation/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/en/metrics/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/dev/en/metrics/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/devmetrics/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/en/troubleshooting/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/dev/en/troubleshooting/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/devtroubleshooting/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/en/api/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/dev/en/api/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/devapi/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/en/architecture/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/dev/en/architecture/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/devarchitecture/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/en/development/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/dev/en/development/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/devdevelopment/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/en/development/changelog/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/dev/en/development/changelog/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/devdevelopment/changelog/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/en/development/docstring-guide/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/dev/en/development/docstring-guide/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/devdevelopment/docstring-guide/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/en/development/versioning/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/dev/en/development/versioning/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/devdevelopment/versioning/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/en/usage/</loc>
+        <lastmod>2026-05-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/dev/en/usage/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/devusage/"/>
+    </url>
+</urlset>
