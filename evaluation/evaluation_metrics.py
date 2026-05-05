@@ -1,8 +1,7 @@
 # Lokale Evaluierungs-Metriken für RAG-System
 
 import re
-import json
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Any
 
 class RAGEvaluator:
     
@@ -127,7 +126,7 @@ class RAGEvaluator:
 
         context_l = (context or "").lower()
         response_s = (response or "")
-        response_l = response_s.lower()
+        response_s.lower()
 
         # URLs aus der Antwort entfernen bevor Fakten extrahiert werden.
         response_no_urls = re.sub(r'https?://[^\s<>"]+', '', response_s)
@@ -309,7 +308,7 @@ class RAGEvaluator:
         if self.check_fallback_usage(response):
             return False  
 
-        response_lower = response.lower()
+        response.lower()
         # Extrahiere alle URLs aus der Antwort
         found_urls = re.findall(r'https?://[^\s<>"{}|\\^`\[\]]+', response)
         found_lower = [u.lower() for u in found_urls]

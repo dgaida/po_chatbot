@@ -1,0 +1,11 @@
+gradio
+chromadb
+sentence-transformers
+rank_bm25
+langchain-text-splitters
+pyyaml
+requests
+python-dotenv
+tqdm
+numpy
+pyngrok
