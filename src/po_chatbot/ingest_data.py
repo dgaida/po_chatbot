@@ -16,19 +16,22 @@ CHUNKS_JSON_PATH = os.path.join("data", "chunks.json")
 COLLECTION_NAME = "th_koeln_rules"
 EMBEDDING_MODEL = "intfloat/multilingual-e5-large"
 
+
 def parse_yaml_frontmatter(filepath):
     # Extrahiert YAML-Metadaten und den Haupttext aus einer Markdown-Datei.
-    with open(filepath, 'r', encoding='utf-8-sig') as f:
+    with open(filepath, "r", encoding="utf-8-sig") as f:
         content = f.read().strip()
 
-    match = re.search(r'^---\s*\n(.*?)\n---\s*\n(.*)', content, re.DOTALL | re.MULTILINE)
-    
+    match = re.search(
+        r"^---\s*\n(.*?)\n---\s*\n(.*)", content, re.DOTALL | re.MULTILINE
+    )
+
     if match:
         yaml_text = match.group(1)
         body_text = match.group(2)
         try:
             metadata = yaml.safe_load(yaml_text)
-            if not metadata: 
+            if not metadata:
                 metadata = {}
         except Exception as e:
             print(f"Warnung: YAML-Parsing-Fehler in {filepath}: {e}")
@@ -37,6 +40,7 @@ def parse_yaml_frontmatter(filepath):
     else:
         print(f"Warnung: Kein YAML-Frontmatter in {filepath} gefunden")
         return {}, content
+
 
 def ingest_data():
     # Verarbeitet Dokumente, erzeugt Chunks mit Metadaten und befüllt die Vektordatenbank.
@@ -47,10 +51,7 @@ def ingest_data():
     # Semantische Splitter mit Priorität auf strukturelle Markdown-Elemente und Absätze
     separators = ["\n# ", "\n## ", "\n### ", "\n§ ", "\n\n", "\n", " ", ""]
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1200,
-        chunk_overlap=250,
-        separators=separators,
-        keep_separator=True
+        chunk_size=1200, chunk_overlap=250, separators=separators, keep_separator=True
     )
 
     all_chunks = []
@@ -61,7 +62,7 @@ def ingest_data():
     for filename in files:
         filepath = os.path.join(DOCS_DIR, filename)
         metadata, body = parse_yaml_frontmatter(filepath)
-        
+
         # Metadaten bereinigen für ChromaDB-Kompatibilität
         safe_meta = {"source": filename}
         for k, v in metadata.items():
@@ -71,30 +72,38 @@ def ingest_data():
                 safe_meta[k] = ", ".join(v)
             else:
                 safe_meta[k] = str(v)
-                
+
         fac = safe_meta.get("faculty", "N/A")
         print(f"Lese: {filename} (Fakultät: {fac})")
-        
+
         raw_chunks = splitter.create_documents([body])
-        
+
         for chunk in raw_chunks:
-            title = safe_meta.get('title', filename)
-            safe_meta.get('study_program', 'Allgemein')
-            doc_type = safe_meta.get('doc_type', '')
-            
+            title = safe_meta.get("title", filename)
+            safe_meta.get("study_program", "Allgemein")
+            doc_type = safe_meta.get("doc_type", "")
+
             # Embeddings so sauber wie möglich halten (nur Inhalt),
             # Metadaten strukturiert belassen, Kontext erst beim Prompt-Bau formatieren.
             content_text = chunk.page_content.strip()
 
             # Für BM25 ist es vorteilhaft Titel/Typ einzubeziehen, aber strukturierte Labels nicht wiederholen.
-            bm25_text = "\n".join([p for p in [str(title).strip(), str(doc_type).strip(), content_text] if p])
-            
-            all_chunks.append({
-                "chunk_id": total_chunks,
-                "content": content_text,
-                "bm25_text": bm25_text,
-                "metadata": safe_meta
-            })
+            bm25_text = "\n".join(
+                [
+                    p
+                    for p in [str(title).strip(), str(doc_type).strip(), content_text]
+                    if p
+                ]
+            )
+
+            all_chunks.append(
+                {
+                    "chunk_id": total_chunks,
+                    "content": content_text,
+                    "bm25_text": bm25_text,
+                    "metadata": safe_meta,
+                }
+            )
             total_chunks += 1
 
     # Chunks für hybride BM25-Suche speichern
@@ -111,11 +120,10 @@ def ingest_data():
     try:
         client.delete_collection(name=COLLECTION_NAME)
     except Exception:  # nosec  # nosec
-        pass 
+        pass
 
     collection = client.create_collection(
-        name=COLLECTION_NAME,
-        embedding_function=emb_func 
+        name=COLLECTION_NAME, embedding_function=emb_func
     )
 
     # Embeddings werden auf sauberem Chunk-Inhalt berechnet.
@@ -125,18 +133,17 @@ def ingest_data():
 
     batch_size = 100
     total_batches = (len(documents) // batch_size) + 1
-    
+
     for i in range(0, len(documents), batch_size):
         end = i + batch_size
         collection.add(
-            documents=documents[i:end],
-            metadatas=metadatas[i:end],
-            ids=ids[i:end]
+            documents=documents[i:end], metadatas=metadatas[i:end], ids=ids[i:end]
         )
         if (i // batch_size + 1) <= total_batches:
             print(f"Batch {i // batch_size + 1}/{total_batches} eingefügt.")
 
     print("Datenbank erfolgreich aufgebaut.")
+
 
 if __name__ == "__main__":
     ingest_data()

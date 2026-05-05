@@ -52,8 +52,8 @@ FACULTY_FILTER_MAP = {
 MAX_CONCURRENT = 1
 _semaphore = threading.Semaphore(MAX_CONCURRENT)
 _queue_lock = threading.Lock()
-_queue_count = 0  
-_avg_gen_time = 10.0  
+_queue_count = 0
+_avg_gen_time = 10.0
 
 SYSTEM_PROMPT = """Sie sind ein präziser Studienberater-Assistent der TH Köln.
 Beantworten Sie die Fragen der Studierenden AUSSCHLIESSLICH basierend auf dem bereitgestellten Kontext. Erfinden Sie keine Fakten. Wenn keine Antwort im Kontext steht, sagen Sie: "Dazu liegen mir keine Informationen vor."
@@ -96,7 +96,7 @@ def generate_with_ollama(prompt):
             "top_p": TOP_P,
             "num_ctx": NUM_CTX,
             "num_predict": NUM_PREDICT,
-        }
+        },
     }
     try:
         resp = requests.post(OLLAMA_URL, json=payload, timeout=300)
@@ -125,7 +125,7 @@ def answer_question(question, faculty, study_program):
     with _queue_lock:
         _queue_count += 1
 
-    # Warte auf freien Slot 
+    # Warte auf freien Slot
     _semaphore.acquire()
     try:
         return _process_question(question, faculty, study_program)
@@ -145,15 +145,19 @@ def _process_question(question, faculty, study_program):
 
     # Retrieval mit Studiengang-Filter
     start = time.time()
-    results = engine.search(question, db_faculty, top_k=TOP_K_RETRIEVAL, study_program_filter=study_program)
+    results = engine.search(
+        question, db_faculty, top_k=TOP_K_RETRIEVAL, study_program_filter=study_program
+    )
     retrieval_time = time.time() - start
 
     docs = results["documents"][0]
     metas = results["metadatas"][0]
 
     if not docs:
-        return ("Es konnten keine relevanten Dokumente gefunden werden. "
-                "Bitte formulieren Sie Ihre Frage um oder wählen Sie eine andere Fakultät."), ""
+        return (
+            "Es konnten keine relevanten Dokumente gefunden werden. "
+            "Bitte formulieren Sie Ihre Frage um oder wählen Sie eine andere Fakultät."
+        ), ""
 
     # Kontext aufbauen und eindeutige Quellen sammeln
     context_str = ""
@@ -180,7 +184,7 @@ def _process_question(question, faculty, study_program):
                 entry += f"  \n[Studienverlaufsplan]({svp_url})"
             sources_display.append(entry)
 
-    # Antwort generieren 
+    # Antwort generieren
     full_prompt = f"{SYSTEM_PROMPT}\n\nMETADATEN DES STUDIERENDEN:\nFakultät: {faculty}\nStudiengang: {study_program}\n\nKONTEXT AUS DATENBANK:\n{context_str}\n\nFRAGE:\n{question}"
 
     start = time.time()
@@ -253,7 +257,7 @@ with gr.Blocks(title="TH Köln Prüfungsamt-Assistent") as demo:
     gr.HTML("<hr style='margin:10px 0;'>")
     gr.HTML("<h3 style='color:#0b3d91; margin:5px 0;'>Verwendete Quellen</h3>")
     sources_output = gr.Markdown(value="*Noch keine Anfrage gestellt.*")
-    
+
     # Warteschlangen-Anzeige
     queue_status = gr.HTML(value="", visible=False)
 
@@ -269,6 +273,7 @@ with gr.Blocks(title="TH Köln Prüfungsamt-Assistent") as demo:
         inputs=[faculty_dropdown],
         outputs=[study_program_dropdown],
     )
+
     def show_queue_status():
         # Zeigt aktuellen Queue-Status an.
         with _queue_lock:
@@ -280,10 +285,10 @@ with gr.Blocks(title="TH Köln Prüfungsamt-Assistent") as demo:
                 visible=True,
             )
         return gr.update(value="", visible=False)
-    
+
     timer = gr.Timer(2.0)
     timer.tick(show_queue_status, outputs=[queue_status])
-    
+
     submit_btn.click(
         fn=answer_question,
         inputs=[question_input, faculty_dropdown, study_program_dropdown],
@@ -296,24 +301,28 @@ with gr.Blocks(title="TH Köln Prüfungsamt-Assistent") as demo:
     )
 
 
-
-
 if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("--public", action="store_true", help="Über ngrok öffentlich erreichbar machen")
+    parser.add_argument(
+        "--public", action="store_true", help="Über ngrok öffentlich erreichbar machen"
+    )
     args = parser.parse_args()
 
-    print(f"Modell: {MODEL_NAME} | temp={TEMPERATURE} | rp={REPEAT_PENALTY} | top_k={TOP_K_RETRIEVAL}")
+    print(
+        f"Modell: {MODEL_NAME} | temp={TEMPERATURE} | rp={REPEAT_PENALTY} | top_k={TOP_K_RETRIEVAL}"
+    )
     print(f"Max. gleichzeitige Anfragen: {MAX_CONCURRENT}")
     demo.queue(default_concurrency_limit=MAX_CONCURRENT)
 
     if args.public:
         from pyngrok import ngrok
+
         public_url = ngrok.connect(7860)
         print(f"\n{'='*60}")
         print(f"  ÖFFENTLICHER LINK: {public_url}")
         print(f"{'='*60}\n")
-        demo.launch(server_name="0.0.0.0", server_port=7860) # nosec B104
+        demo.launch(server_name="0.0.0.0", server_port=7860)  # nosec B104
     else:
         demo.launch(share=False)

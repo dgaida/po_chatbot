@@ -27,7 +27,7 @@ FIXED_NUM_CTX = 4096
 # Grid für Parameter-Suche (Phase 1 + 2)
 TEMPERATURE_VALUES = [0.0, 0.2, 0.4]
 REPEAT_PENALTY_VALUES = [1.0, 1.1, 1.2]
-TOP_K_VALUES = [3, 5, 7, 9] 
+TOP_K_VALUES = [3, 5, 7, 9]
 
 # Phase-Konfigurationen
 
@@ -53,12 +53,12 @@ PHASE2_CSV = "data/evaluation_logs/phase2_large_models_grid.csv"
 # 6 Modelle x 1 Config x 21 Fragen = 126 Evals
 PHASE3_BEST_CONFIGS = {
     # 7B (Phase 1 Ergebnisse)
-    "gemma2":      {"temperature": 0.0, "repeat_penalty": 1.0, "top_k": 5},  
-    "qwen2.5":     {"temperature": 0.4, "repeat_penalty": 1.0, "top_k": 3},  
-    "mistral":     {"temperature": 0.0, "repeat_penalty": 1.2, "top_k": 5},
-    "llama3.1":    {"temperature": 0.2, "repeat_penalty": 1.2, "top_k": 5}, 
+    "gemma2": {"temperature": 0.0, "repeat_penalty": 1.0, "top_k": 5},
+    "qwen2.5": {"temperature": 0.4, "repeat_penalty": 1.0, "top_k": 3},
+    "mistral": {"temperature": 0.0, "repeat_penalty": 1.2, "top_k": 5},
+    "llama3.1": {"temperature": 0.2, "repeat_penalty": 1.2, "top_k": 5},
     # 14B (Phase 2 Ergebnisse)
-    "phi4":        {"temperature": 0.4, "repeat_penalty": 1.0, "top_k": 5},
+    "phi4": {"temperature": 0.4, "repeat_penalty": 1.0, "top_k": 5},
     "qwen2.5:14b": {"temperature": 0.0, "repeat_penalty": 1.0, "top_k": 5},
 }
 PHASE3_MODELS = [
@@ -78,16 +78,16 @@ PHASE4_MODELS = [
     {"provider": "local", "model": "qwen2.5:14b"},
     {"provider": "local", "model": "phi4"},
     # Cloud
-    {"provider": "groq",  "model": "llama-3.3-70b-versatile"},
+    {"provider": "groq", "model": "llama-3.3-70b-versatile"},
     {"provider": "gemini", "model": "gemini-2.5-flash"},
 ]
 PHASE4_CLOUD_CONFIGS = {
     "llama-3.3-70b-versatile": {"temperature": 0.0},
-    "gemini-2.5-flash":        {"temperature": 0.0},
+    "gemini-2.5-flash": {"temperature": 0.0},
 }
 PHASE4_CSV = "data/evaluation_logs/phase4_local_vs_cloud.csv"
 
-# Phase 5: Fine-Grained Top-K Analyse für bestes Modell 
+# Phase 5: Fine-Grained Top-K Analyse für bestes Modell
 # 1 Modell x 1 Top-K x 3 Temps x 3 RP x 21 Fragen = 189 Evals
 PHASE5_MODEL = {"provider": "local", "model": "qwen2.5:14b"}
 PHASE5_TOP_K_VALUES = [6]
@@ -120,11 +120,13 @@ Quellen:
 Wenn die exakte Antwort auf die Frage (oder eine der Teilfragen) nicht im Kontext steht, antworten Sie für diesen Teil EXAKT und AUSSCHLIESSLICH mit dem Satz: "Dazu liegen mir keine Informationen vor."
 """
 
+
 def generate_response(provider, model, full_prompt, temp, extra_opts=None):
     if provider == "local":
         return generate_with_ollama_direct(model, full_prompt, temp, extra_opts)
     else:
         return generate_with_cloud_model(provider, model, full_prompt, temp)
+
 
 def generate_with_cloud_model(provider, model, full_prompt, temp):
     try:
@@ -133,7 +135,9 @@ def generate_with_cloud_model(provider, model, full_prompt, temp):
                 model = f"models/{model}"
         # LLMClient default max_tokens=512. Das kann bei RAG-Antworten (inkl. Struktur) zu abgeschnittenen Outputs führen
         max_tokens = 768 if provider == "groq" else 1536
-        client = LLMClient(api_choice=provider, llm=model, temperature=temp, max_tokens=max_tokens)
+        client = LLMClient(
+            api_choice=provider, llm=model, temperature=temp, max_tokens=max_tokens
+        )
         messages = [{"role": "user", "content": full_prompt}]
 
         last_err = None
@@ -147,7 +151,11 @@ def generate_with_cloud_model(provider, model, full_prompt, temp):
             except Exception as e:
                 last_err = e
                 err_str = str(e)
-                if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str or "RateLimit" in err_str:
+                if (
+                    "429" in err_str
+                    or "RESOURCE_EXHAUSTED" in err_str
+                    or "RateLimit" in err_str
+                ):
                     time.sleep(2 + attempt * 4)
                     continue
                 break
@@ -156,33 +164,34 @@ def generate_with_cloud_model(provider, model, full_prompt, temp):
     except Exception as e:
         return f"FEHLER: Cloud-Modell {provider}/{model} - {e}"
 
+
 def generate_with_ollama_direct(model_name, full_prompt, temp, extra_opts=None):
     url = "http://localhost:11434/api/generate"
-    options = {
-        "temperature": temp,
-        "num_predict": 1024
-    }
+    options = {"temperature": temp, "num_predict": 1024}
     if extra_opts:
         options.update(extra_opts)
     payload = {
         "model": model_name,
         "prompt": full_prompt,
         "stream": False,
-        "options": options
+        "options": options,
     }
     try:
-        response = requests.post(url, json=payload, timeout=300) 
+        response = requests.post(url, json=payload, timeout=300)
         if response.status_code == 200:
             return response.json().get("response", "").strip()
         return f"FEHLER: Lokaler Ollama HTTP Status {response.status_code}"
     except Exception as e:
         return f"FEHLER: Lokaler Ollama Absturz - {e}"
 
+
 def _needs_multiple_sources(question: str, item: dict = None) -> bool:
     # Prüft, ob die Frage mehrere Quellen benötigt.
     q = (question or "").lower()
     # PO-Vergleich: "PO4 und PO5", "Unterschied", "zwischen"
-    if ("po" in q or "prüfungsordnung" in q) and any(w in q for w in ["unterschied", "zwischen", "po4", "po5", "po6"]):
+    if ("po" in q or "prüfungsordnung" in q) and any(
+        w in q for w in ["unterschied", "zwischen", "po4", "po5", "po6"]
+    ):
         return True
     # Multi-Intent mit Formular-Frage: "Wo finde ich das Formular?"
     if item and item.get("multi_intent_parts", 1) >= 2:
@@ -191,6 +200,7 @@ def _needs_multiple_sources(question: str, item: dict = None) -> bool:
     if item and len(item.get("expected_sources", [])) >= 2:
         return True
     return False
+
 
 def _pick_relevant_sources(metas, faculty: str, study_program: str, max_sources: int):
     picked = []
@@ -216,7 +226,14 @@ def _pick_relevant_sources(metas, faculty: str, study_program: str, max_sources:
 
         meta_sp = str((meta or {}).get("study_program", "")).strip().lower()
         # "Alle ..." oder "Allgemein" Dokumente immer akzeptieren (z.B. Verlängerungsformulare)
-        if meta_sp and meta_sp not in ("allgemein", "") and "alle" not in meta_sp and sp_norm and sp_norm not in meta_sp and meta_sp not in sp_norm:
+        if (
+            meta_sp
+            and meta_sp not in ("allgemein", "")
+            and "alle" not in meta_sp
+            and sp_norm
+            and sp_norm not in meta_sp
+            and meta_sp not in sp_norm
+        ):
             continue
 
         picked.append(src)
@@ -224,7 +241,15 @@ def _pick_relevant_sources(metas, faculty: str, study_program: str, max_sources:
 
     return picked
 
-def enforce_source_policy(response_text: str, metas, faculty: str, study_program: str, question: str, item: dict):
+
+def enforce_source_policy(
+    response_text: str,
+    metas,
+    faculty: str,
+    study_program: str,
+    question: str,
+    item: dict,
+):
     text = (response_text or "").strip()
     if text.startswith("FEHLER:"):
         return text
@@ -233,9 +258,13 @@ def enforce_source_policy(response_text: str, metas, faculty: str, study_program
         return "Dazu liegen mir keine Informationen vor."
 
     max_sources = 3 if _needs_multiple_sources(question, item) else 1
-    sources = _pick_relevant_sources(metas, faculty, study_program, max_sources=max_sources)
+    sources = _pick_relevant_sources(
+        metas, faculty, study_program, max_sources=max_sources
+    )
 
-    body = re.split(r"\n\s*(Quellen:|Quelle:)\s*\n", text, maxsplit=1, flags=re.IGNORECASE)[0].strip()
+    body = re.split(
+        r"\n\s*(Quellen:|Quelle:)\s*\n", text, maxsplit=1, flags=re.IGNORECASE
+    )[0].strip()
     body = re.sub(r"https?://[^\s<>'\"\]\)]+", "", body).strip()
     body = re.sub(r"\n{3,}", "\n\n", body).strip()
 
@@ -244,21 +273,32 @@ def enforce_source_policy(response_text: str, metas, faculty: str, study_program
 
     # Studienverlaufsplan-URL anhängen, wenn PO-Dokument als Quelle und Metadaten den Link enthalten
     q_lower = (question or "").lower()
-    svp_keywords = ["studienverlauf", "verlaufsplan", "modulplan", "semester", "ects",
-                     "leistungspunkte", "regelstudienzeit", "prüfungsordnung", "praxissemester"]
+    svp_keywords = [
+        "studienverlauf",
+        "verlaufsplan",
+        "modulplan",
+        "semester",
+        "ects",
+        "leistungspunkte",
+        "regelstudienzeit",
+        "prüfungsordnung",
+        "praxissemester",
+    ]
     if any(kw in q_lower for kw in svp_keywords):
         for meta in metas or []:
             svp_url = (meta or {}).get("url_studienverlaufsplan", "")
             if svp_url and svp_url not in sources:
                 sources.append(svp_url)
-                break 
+                break
 
     sources_block = "\n\nQuellen:\n" + "\n".join(f"- {s}" for s in sources)
     return f"{body}{sources_block}".strip()
 
+
 def load_questions(filepath="data/improved_test_questions.json"):
-    with open(filepath, 'r', encoding='utf-8') as f:
+    with open(filepath, "r", encoding="utf-8") as f:
         return json.load(f)
+
 
 def build_tasks(phase, questions):
     # Baut die Task-Liste basierend auf der gewählten Phase.
@@ -271,18 +311,20 @@ def build_tasks(phase, questions):
                 for rp in REPEAT_PENALTY_VALUES:
                     for tk in TOP_K_VALUES:
                         for q in questions:
-                            tasks.append({
-                                "provider": model_cfg["provider"],
-                                "model": model_cfg["model"],
-                                "k": tk,
-                                "temp": temp,
-                                "item": q,
-                                "extra_opts": {
-                                    "repeat_penalty": rp,
-                                    "top_p": FIXED_TOP_P,
-                                    "num_ctx": FIXED_NUM_CTX,
-                                },
-                            })
+                            tasks.append(
+                                {
+                                    "provider": model_cfg["provider"],
+                                    "model": model_cfg["model"],
+                                    "k": tk,
+                                    "temp": temp,
+                                    "item": q,
+                                    "extra_opts": {
+                                        "repeat_penalty": rp,
+                                        "top_p": FIXED_TOP_P,
+                                        "num_ctx": FIXED_NUM_CTX,
+                                    },
+                                }
+                            )
 
     elif phase == 3:
         for model_cfg in PHASE3_MODELS:
@@ -292,18 +334,20 @@ def build_tasks(phase, questions):
             rp = best.get("repeat_penalty", 1.0)
             tk = best.get("top_k", 7)
             for q in questions:
-                tasks.append({
-                    "provider": model_cfg["provider"],
-                    "model": model_name,
-                    "k": tk,
-                    "temp": temp,
-                    "item": q,
-                    "extra_opts": {
-                        "repeat_penalty": rp,
-                        "top_p": FIXED_TOP_P,
-                        "num_ctx": FIXED_NUM_CTX,
-                    },
-                })
+                tasks.append(
+                    {
+                        "provider": model_cfg["provider"],
+                        "model": model_name,
+                        "k": tk,
+                        "temp": temp,
+                        "item": q,
+                        "extra_opts": {
+                            "repeat_penalty": rp,
+                            "top_p": FIXED_TOP_P,
+                            "num_ctx": FIXED_NUM_CTX,
+                        },
+                    }
+                )
 
     elif phase == 4:
         for model_cfg in PHASE4_MODELS:
@@ -315,40 +359,10 @@ def build_tasks(phase, questions):
                 rp = best.get("repeat_penalty", 1.0)
                 tk = best.get("top_k", 7)
                 for q in questions:
-                    tasks.append({
-                        "provider": provider,
-                        "model": model_name,
-                        "k": tk,
-                        "temp": temp,
-                        "item": q,
-                        "extra_opts": {
-                            "repeat_penalty": rp,
-                            "top_p": FIXED_TOP_P,
-                            "num_ctx": FIXED_NUM_CTX,
-                        },
-                    })
-            else:
-                cloud_cfg = PHASE4_CLOUD_CONFIGS.get(model_name, {})
-                temp = cloud_cfg.get("temperature", 0.0)
-                for q in questions:
-                    tasks.append({
-                        "provider": provider,
-                        "model": model_name,
-                        "k": 5, 
-                        "temp": temp,
-                        "item": q,
-                        "extra_opts": {},
-                    })
-
-    elif phase == 5:
-        model_cfg = PHASE5_MODEL
-        for tk in PHASE5_TOP_K_VALUES:
-            for temp in TEMPERATURE_VALUES:
-                for rp in REPEAT_PENALTY_VALUES:
-                    for q in questions:
-                        tasks.append({
-                            "provider": model_cfg["provider"],
-                            "model": model_cfg["model"],
+                    tasks.append(
+                        {
+                            "provider": provider,
+                            "model": model_name,
                             "k": tk,
                             "temp": temp,
                             "item": q,
@@ -357,13 +371,51 @@ def build_tasks(phase, questions):
                                 "top_p": FIXED_TOP_P,
                                 "num_ctx": FIXED_NUM_CTX,
                             },
-                        })
+                        }
+                    )
+            else:
+                cloud_cfg = PHASE4_CLOUD_CONFIGS.get(model_name, {})
+                temp = cloud_cfg.get("temperature", 0.0)
+                for q in questions:
+                    tasks.append(
+                        {
+                            "provider": provider,
+                            "model": model_name,
+                            "k": 5,
+                            "temp": temp,
+                            "item": q,
+                            "extra_opts": {},
+                        }
+                    )
+
+    elif phase == 5:
+        model_cfg = PHASE5_MODEL
+        for tk in PHASE5_TOP_K_VALUES:
+            for temp in TEMPERATURE_VALUES:
+                for rp in REPEAT_PENALTY_VALUES:
+                    for q in questions:
+                        tasks.append(
+                            {
+                                "provider": model_cfg["provider"],
+                                "model": model_cfg["model"],
+                                "k": tk,
+                                "temp": temp,
+                                "item": q,
+                                "extra_opts": {
+                                    "repeat_penalty": rp,
+                                    "top_p": FIXED_TOP_P,
+                                    "num_ctx": FIXED_NUM_CTX,
+                                },
+                            }
+                        )
 
     return tasks
 
 
 def get_csv_path(phase):
-    return {1: PHASE1_CSV, 2: PHASE2_CSV, 3: PHASE3_CSV, 4: PHASE4_CSV, 5: PHASE5_CSV}[phase]
+    return {1: PHASE1_CSV, 2: PHASE2_CSV, 3: PHASE3_CSV, 4: PHASE4_CSV, 5: PHASE5_CSV}[
+        phase
+    ]
 
 
 def run_evaluation(phase):
@@ -403,7 +455,9 @@ def run_evaluation(phase):
         study_program = item.get("study_program", "Allgemein")
 
         try:
-            res = engine.search(question, faculty, top_k=k, study_program_filter=study_program)
+            res = engine.search(
+                question, faculty, top_k=k, study_program_filter=study_program
+            )
             docs = res["documents"][0]
             metas = res["metadatas"][0]
         except Exception:
@@ -411,10 +465,17 @@ def run_evaluation(phase):
 
         retrieved_sources = [m.get("source", "N/A") for m in metas]
         expected_src = item.get("expected_sources", [])
-        retrieval_hit = all(
-            any(exp.rstrip('/').split('/')[-1].lower() in rs.lower() for rs in retrieved_sources)
-            for exp in expected_src
-        ) if expected_src else True
+        retrieval_hit = (
+            all(
+                any(
+                    exp.rstrip("/").split("/")[-1].lower() in rs.lower()
+                    for rs in retrieved_sources
+                )
+                for exp in expected_src
+            )
+            if expected_src
+            else True
+        )
 
         context_str = ""
         for i, doc_text in enumerate(docs):
@@ -424,18 +485,30 @@ def run_evaluation(phase):
         full_prompt = f"{SYSTEM_PROMPT}\n\nMETADATEN DES STUDIERENDEN:\nFakultät: {faculty}\nStudiengang: {study_program}\n\nKONTEXT AUS DATENBANK:\n{context_str}\n\nFRAGE:\n{question}"
 
         start_time = time.time()
-        response_text = generate_response(provider, model, full_prompt, temp, extra_opts)
-        response_text = enforce_source_policy(response_text, metas, faculty, study_program, question, item)
+        response_text = generate_response(
+            provider, model, full_prompt, temp, extra_opts
+        )
+        response_text = enforce_source_policy(
+            response_text, metas, faculty, study_program, question, item
+        )
         duration = round(time.time() - start_time, 2)
 
-        is_error = isinstance(response_text, str) and response_text.startswith("FEHLER:")
+        is_error = isinstance(response_text, str) and response_text.startswith(
+            "FEHLER:"
+        )
 
         if is_error:
             metrics = {
-                "overall_score": None, "has_fallback": False, "has_sources": False,
-                "source_count": 0, "multi_intent_complete": False, "hallucination_free": False,
-                "source_format_correct": False, "instruction_following": False,
-                "response_length": len(response_text), "context_usage_percent": 0.0,
+                "overall_score": None,
+                "has_fallback": False,
+                "has_sources": False,
+                "source_count": 0,
+                "multi_intent_complete": False,
+                "hallucination_free": False,
+                "source_format_correct": False,
+                "instruction_following": False,
+                "response_length": len(response_text),
+                "context_usage_percent": 0.0,
             }
         else:
             metrics = evaluator.evaluate_response(
@@ -444,7 +517,7 @@ def run_evaluation(phase):
                 context=context_str,
                 expected_fallback=item.get("expected_fallback", False),
                 multi_intent_parts=item.get("multi_intent_parts", 1),
-                question_data=item
+                question_data=item,
             )
 
         result = {
@@ -480,7 +553,7 @@ def run_evaluation(phase):
             "top_p": extra_opts.get("top_p", ""),
             "num_ctx": extra_opts.get("num_ctx", ""),
             "retrieved_sources": "; ".join(retrieved_sources),
-            "retrieval_hit": retrieval_hit
+            "retrieval_hit": retrieval_hit,
         }
 
         results.append(result)
@@ -491,7 +564,7 @@ def run_evaluation(phase):
     csv_file = get_csv_path(phase)
     if results:
         keys = results[0].keys()
-        with open(csv_file, 'w', newline='', encoding='utf-8') as f:
+        with open(csv_file, "w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=keys, quoting=csv.QUOTE_ALL)
             writer.writeheader()
             writer.writerows(results)
@@ -501,7 +574,7 @@ def run_evaluation(phase):
     summary["total_evaluations_including_errors"] = len(results)
     summary["error_rate"] = (len(results) - len(scored_results)) / max(1, len(results))
     summary_file = csv_file.replace(".csv", "_summary.json")
-    with open(summary_file, 'w', encoding='utf-8') as f:
+    with open(summary_file, "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2, ensure_ascii=False)
 
     print(f"\nPhase {phase} abgeschlossen.")
@@ -509,7 +582,9 @@ def run_evaluation(phase):
     print(f"Zusammenfassung: {summary_file}")
     print(f"Durchschnittlicher Score: {summary.get('average_score', 0):.1f}/100")
     print(f"Raten der Fallbacks: {summary.get('fallback_rate', 0):.1%}")
-    print(f"Gesamtzahl der Evals: {len(results)} (davon {len(results)-len(scored_results)} Fehler)")
+    print(
+        f"Gesamtzahl der Evals: {len(results)} (davon {len(results)-len(scored_results)} Fehler)"
+    )
 
 
 if __name__ == "__main__":
@@ -523,7 +598,9 @@ if __name__ == "__main__":
         print("      6 Modelle x 1 Config x 21 Fragen = 126 Evals")
         print("  4 = Lokale vs Cloud (beste Lokale + Gemini + Groq)")
         print("      4 Modelle x 1 Config x 21 Fragen = 84 Evals")
-        print("  5 = Fine-Grained Top-K (qwen2.5:14b mit top_k=6, ergänzt Phase 2 K=5/7)")
+        print(
+            "  5 = Fine-Grained Top-K (qwen2.5:14b mit top_k=6, ergänzt Phase 2 K=5/7)"
+        )
         print("      1 Modell x 1 Top-K x 3 Temps x 3 RP x 21 Fragen = 189 Evals")
         sys.exit(1)
     run_evaluation(int(sys.argv[1]))

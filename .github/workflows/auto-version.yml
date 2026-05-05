@@ -1,14 +1,11 @@
 name: Auto Versioning
 
 on:
-  pull_request:
-    types: [closed]
-    branches:
-      - main
+  push:
+    branches: [main]
 
 jobs:
   versioning:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -16,8 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: main
           fetch-depth: 0
 
-      - name: Run Auto Versioning
-        uses: dgaida/auto-version-action@v1
+      - name: Auto Version and Badges
+        uses: dgaida/auto-version-action@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-version: true
+          create-badge: true
