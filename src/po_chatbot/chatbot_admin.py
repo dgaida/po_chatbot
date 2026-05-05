@@ -46,8 +46,15 @@ def get_queue_display():
         choices.append(label)
         overview_lines.append(f"**{i+1}.** {label}")
 
-    overview = f"### {len(entries)} wartende Anfrage(n)\n\n" + "\n\n".join(overview_lines)
-    return overview, entries, gr.update(choices=choices, value=choices[0] if choices else None), ""
+    overview = f"### {len(entries)} wartende Anfrage(n)\n\n" + "\n\n".join(
+        overview_lines
+    )
+    return (
+        overview,
+        entries,
+        gr.update(choices=choices, value=choices[0] if choices else None),
+        "",
+    )
 
 
 def show_detail(selected, entries_state):
@@ -72,9 +79,11 @@ def show_detail(selected, entries_state):
     question = f"**Fakultät:** {entry.get('faculty', '?')}\n\n**Frage:**\n{entry.get('question', '?')}"
     answer = entry.get("answer", "Keine Antwort")
     sources = "\n".join([f"- {s}" for s in entry.get("sources", [])])
-    meta = (f"⏱ Retrieval: {entry.get('retrieval_time', '?')}s | "
-            f"Generierung: {entry.get('generation_time', '?')}s | "
-            f"ID: {entry.get('id', '?')}")
+    meta = (
+        f"⏱ Retrieval: {entry.get('retrieval_time', '?')}s | "
+        f"Generierung: {entry.get('generation_time', '?')}s | "
+        f"ID: {entry.get('id', '?')}"
+    )
 
     return question, answer, sources, meta
 
@@ -163,7 +172,9 @@ with gr.Blocks(title="Prüfungsamt — Human-in-the-Loop Dashboard") as demo:
 
     with gr.Row():
         with gr.Column(scale=1):
-            request_dropdown = gr.Dropdown(label="Anfrage auswählen", choices=[], interactive=True)
+            request_dropdown = gr.Dropdown(
+                label="Anfrage auswählen", choices=[], interactive=True
+            )
         with gr.Column(scale=1):
             meta_display = gr.Textbox(label="Metadaten", interactive=False)
 
@@ -171,7 +182,9 @@ with gr.Blocks(title="Prüfungsamt — Human-in-the-Loop Dashboard") as demo:
         with gr.Column(scale=1):
             question_display = gr.Markdown(label="Frage")
         with gr.Column(scale=2):
-            answer_display = gr.Textbox(label="KI-generierte Antwort", lines=12, interactive=False)
+            answer_display = gr.Textbox(
+                label="KI-generierte Antwort", lines=12, interactive=False
+            )
 
     sources_display = gr.Textbox(label="Verwendete Quellen", lines=3, interactive=False)
 
