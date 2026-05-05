@@ -38,7 +38,7 @@ jobs:
       - name: Check API doc coverage
         run: |
           mkdir -p docs/assets
-          interrogate src/ --fail-under 95 --generate-badge docs/assets/interrogate.svg || true
+          interrogate src/ evaluation/ --fail-under 95 --generate-badge docs/assets/interrogate.svg || true
 
       - name: Collect and write metrics.json
         run: |
