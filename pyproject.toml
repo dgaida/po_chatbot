@@ -1,6 +1,6 @@
 [project]
 name = "po-chatbot"
-version = "0.1.2"
+version = "0.1.3"
 description = "RAG-based chatbot for exam regulations at TH Köln"
 authors = [
     { name = "Nikita B." }
