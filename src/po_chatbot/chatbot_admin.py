@@ -9,10 +9,18 @@ import json
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 import gradio as gr
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # File paths (shared with chatbot_student.py)
-PENDING_QUEUE: str = os.path.join("data", "evaluation_logs", "hil_pending.jsonl")
-FEEDBACK_LOG: str = os.path.join("data", "evaluation_logs", "hil_feedback.jsonl")
+PENDING_QUEUE: str = os.getenv(
+    "PENDING_QUEUE", os.path.join("data", "evaluation_logs", "hil_pending.jsonl")
+)
+FEEDBACK_LOG: str = os.getenv(
+    "FEEDBACK_LOG", os.path.join("data", "evaluation_logs", "hil_feedback.jsonl")
+)
 
 
 def load_pending() -> List[Dict[str, Any]]:
@@ -294,4 +302,4 @@ with gr.Blocks(title="Prüfungsamt — Human-in-the-Loop Dashboard") as demo:
 
 
 if __name__ == "__main__":
-    demo.launch(share=False, server_port=7861)
+    demo.launch(share=False, server_name="0.0.0.0", server_port=int(os.getenv("ADMIN_PORT", "7861")))

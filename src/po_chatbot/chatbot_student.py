@@ -12,17 +12,29 @@ import requests
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 import gradio as gr
+from dotenv import load_dotenv
 
 from retrieval_engine import HybridRetrievalEngine
 
-MODEL_NAME: str = "qwen2.5:14b"
-OLLAMA_URL: str = "http://localhost:11434/api/generate"
-TEMPERATURE: float = 0.0
-REPEAT_PENALTY: float = 1.0
-TOP_K_RETRIEVAL: int = 5
-NUM_PREDICT: int = 1024
-NUM_CTX: int = 4096
-TOP_P: float = 0.85
+# Load environment variables
+load_dotenv()
+
+MODEL_NAME: str = os.getenv("MODEL_NAME", "qwen2.5:14b")
+OLLAMA_URL: str = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
+TEMPERATURE: float = float(os.getenv("TEMPERATURE", "0.0"))
+REPEAT_PENALTY: float = float(os.getenv("REPEAT_PENALTY", "1.0"))
+TOP_K_RETRIEVAL: int = int(os.getenv("TOP_K_RETRIEVAL", "5"))
+NUM_PREDICT: int = int(os.getenv("NUM_PREDICT", "1024"))
+NUM_CTX: int = int(os.getenv("NUM_CTX", "4096"))
+TOP_P: float = float(os.getenv("TOP_P", "0.85"))
+
+# Logging and HIL paths
+CHAT_LOG: str = os.getenv(
+    "CHAT_LOG", os.path.join("data", "evaluation_logs", "chat_log.jsonl")
+)
+PENDING_QUEUE: str = os.getenv(
+    "PENDING_QUEUE", os.path.join("data", "evaluation_logs", "hil_pending.jsonl")
+)
 
 # Study programs per faculty (from YAML metadata of documents)
 STUDY_PROGRAMS: Dict[str, List[str]] = {
@@ -54,7 +66,7 @@ FACULTY_FILTER_MAP: Dict[str, str] = {
     "F04 / F08": "F04, F08",
 }
 
-MAX_CONCURRENT: int = 1
+MAX_CONCURRENT: int = int(os.getenv("MAX_CONCURRENT", "1"))
 _semaphore: threading.Semaphore = threading.Semaphore(MAX_CONCURRENT)
 _queue_lock: threading.Lock = threading.Lock()
 _queue_count: int = 0
@@ -71,15 +83,11 @@ Sie finden den Antrag auf Zulassung im entsprechenden Formular des Prüfungsserv
 Link zum Dokument: https://www.th-koeln.de/beispiel_link.pdf
 """
 
-# Global variables
 engine: Optional[HybridRetrievalEngine] = None
-
-CHAT_LOG: str = os.path.join("data", "evaluation_logs", "student_chat_history.jsonl")
-PENDING_QUEUE: str = os.path.join("data", "evaluation_logs", "hil_pending.jsonl")
 
 
 def init_engine() -> None:
-    """Initializes the retrieval engine if it hasn't been initialized yet."""
+    """Lazy initialization of the Retrieval Engine."""
     global engine
     if engine is None:
         engine = HybridRetrievalEngine()
@@ -389,4 +397,4 @@ if __name__ == "__main__":
         print(f"{'='*60}\n")
         demo.launch(server_name="0.0.0.0", server_port=7860)  # nosec B104
     else:
-        demo.launch(share=False)
+        demo.launch(share=False, server_name="0.0.0.0", server_port=int(os.getenv("PORT", "7860")))

@@ -1,0 +1,36 @@
+services:
+  # Student Chatbot Interface
+  - type: web
+    name: po-chatbot-student
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: export PYTHONPATH=$PYTHONPATH:$(pwd)/src/po_chatbot:$(pwd)/evaluation && python src/po_chatbot/chatbot_student.py
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: MODEL_NAME
+        value: qwen2.5:14b
+      - key: OLLAMA_URL
+        placeholder: "http://your-ollama-instance:11434/api/generate"
+      - key: TEMPERATURE
+        value: "0.0"
+      - key: MAX_CONCURRENT
+        value: "1"
+      - key: DB_PATH
+        value: "data/chroma_db"
+      - key: CHUNKS_PATH
+        value: "data/chunks.json"
+
+  # Admin Dashboard (Human-in-the-Loop)
+  - type: web
+    name: po-chatbot-admin
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: export PYTHONPATH=$PYTHONPATH:$(pwd)/src/po_chatbot:$(pwd)/evaluation && python src/po_chatbot/chatbot_admin.py
+    envVars:
+      - key: ADMIN_PORT
+        value: 10000
+      - key: PENDING_QUEUE
+        value: "data/evaluation_logs/hil_pending.jsonl"
+      - key: FEEDBACK_LOG
+        value: "data/evaluation_logs/hil_feedback.jsonl"
