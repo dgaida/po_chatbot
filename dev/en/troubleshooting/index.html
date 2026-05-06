@@ -1098,27 +1098,27 @@
 <h2 id="ollama-connection-issues">Ollama Connection Issues<a class="headerlink" href="#ollama-connection-issues" title="Permanent link">&para;</a></h2>
 <p><strong>Error</strong>: <code>Error: Ollama is not reachable.</code></p>
 <ul>
-<li><strong>Solution</strong>: Ensure that Ollama is running in the background (<code>ollama serve</code>). Check the status with <code>curl http://localhost:11434/api/tags</code>.</li>
-<li><strong>Solution</strong>: If Ollama is running on a different port or machine, adjust the <code>OLLAMA_URL</code> in the scripts.</li>
+<li><strong>Solution</strong>: Ensure that Ollama is running in the background (<code>ollama serve</code>). Check the status with <code>curl http://localhost:11434/api/tags</code>.  </li>
+<li><strong>Solution</strong>: If Ollama is running on a different port or machine, adjust the <code>OLLAMA_URL</code> in the scripts.  </li>
 </ul>
 <h2 id="no-documents-found">No Documents Found<a class="headerlink" href="#no-documents-found" title="Permanent link">&para;</a></h2>
 <p><strong>Error</strong>: <code>No relevant documents could be found.</code></p>
 <ul>
-<li><strong>Cause</strong>: The database has not been initialized.</li>
-<li><strong>Solution</strong>: Run <code>python src/po_chatbot/ingest_data.py</code>. Check if there are Markdown files in <code>data/text_extracted</code>.</li>
-<li><strong>Cause</strong>: The faculty or study program filter is too restrictive.</li>
-<li><strong>Solution</strong>: Try using a more general setting.</li>
+<li><strong>Cause</strong>: The database has not been initialized.  </li>
+<li><strong>Solution</strong>: Run <code>python src/po_chatbot/ingest_data.py</code>. Check if there are Markdown files in <code>data/text_extracted</code>.  </li>
+<li><strong>Cause</strong>: The faculty or study program filter is too restrictive.  </li>
+<li><strong>Solution</strong>: Try using a more general setting.  </li>
 </ul>
 <h2 id="hallucinations-in-responses">Hallucinations in Responses<a class="headerlink" href="#hallucinations-in-responses" title="Permanent link">&para;</a></h2>
 <p><strong>Problem</strong>: The chatbot invents facts or provides incorrect deadlines.</p>
 <ul>
-<li><strong>Solution</strong>: Increase the <code>REPEAT_PENALTY</code> or decrease the <code>TEMPERATURE</code>.</li>
-<li><strong>Solution</strong>: Check the quality of the extracted texts in <code>data/chunks.json</code>. Use the admin interface for corrections.</li>
+<li><strong>Solution</strong>: Increase the <code>REPEAT_PENALTY</code> or decrease the <code>TEMPERATURE</code>.  </li>
+<li><strong>Solution</strong>: Check the quality of the extracted texts in <code>data/chunks.json</code>. Use the admin interface for corrections.  </li>
 </ul>
 <h2 id="slow-response-generation">Slow Response Generation<a class="headerlink" href="#slow-response-generation" title="Permanent link">&para;</a></h2>
 <p><strong>Problem</strong>: Response takes several minutes.</p>
 <ul>
-<li><strong>Solution</strong>: The PO-Chatbot runs locally on your CPU/GPU. A system with at least 16GB RAM and a dedicated GPU is recommended for the 14B model. Consider using a smaller model (e.g., <code>qwen2.5:7b</code>).</li>
+<li><strong>Solution</strong>: The PO-Chatbot runs locally on your CPU/GPU. A system with at least 16GB RAM and a dedicated GPU is recommended for the 14B model. Consider using a smaller model (e.g., <code>qwen2.5:7b</code>).  </li>
 </ul>
 
 

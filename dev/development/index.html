@@ -1098,20 +1098,20 @@
 <p>Dieses Dokument beschreibt die Richtlinien für die Mitarbeit am PO-Chatbot.</p>
 <h2 id="lokales-setup">Lokales Setup<a class="headerlink" href="#lokales-setup" title="Permanent link">&para;</a></h2>
 <ol>
-<li>Installieren Sie die Entwickler-Abhängigkeiten:
+<li>Installieren Sie die Entwickler-Abhängigkeiten:<br />
    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>pip<span class="w"> </span>install<span class="w"> </span>black<span class="w"> </span>ruff<span class="w"> </span>pytest<span class="w"> </span>interrogate
 </code></pre></div></li>
-<li>Aktivieren Sie die Git-Hooks (falls vorhanden) oder führen Sie die Checks manuell aus.</li>
+<li>Aktivieren Sie die Git-Hooks (falls vorhanden) oder führen Sie die Checks manuell aus.  </li>
 </ol>
 <h2 id="code-stil">Code-Stil<a class="headerlink" href="#code-stil" title="Permanent link">&para;</a></h2>
-<p>Wir verwenden <strong>Black</strong> für die Formatierung und <strong>Ruff</strong> für das Linting.
-- Formatierung: <code>black src evaluation</code>
-- Linting: <code>ruff check src evaluation</code></p>
+<p>Wir verwenden <strong>Black</strong> für die Formatierung und <strong>Ruff</strong> für das Linting.<br />
+- Formatierung: <code>black src evaluation</code><br />
+- Linting: <code>ruff check src evaluation</code>  </p>
 <h2 id="dokumentation">Dokumentation<a class="headerlink" href="#dokumentation" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Verwenden Sie Google-Style Docstrings für alle öffentlichen Funktionen und Klassen.</li>
-<li>Die Dokumentation wird mit MkDocs erstellt. Führen Sie <code>mkdocs serve</code> aus, um eine Vorschau lokal anzuzeigen.</li>
+<li>Verwenden Sie Google-Style Docstrings für alle öffentlichen Funktionen und Klassen.  </li>
+<li>Die Dokumentation wird mit MkDocs erstellt. Führen Sie <code>mkdocs serve</code> aus, um eine Vorschau lokal anzuzeigen.  </li>
 </ul>
 <h2 id="tests">Tests<a class="headerlink" href="#tests" title="Permanent link">&para;</a></h2>
 <p>Bisherige Tests befinden sich im <code>evaluation/</code> Verzeichnis. Neue Unit-Tests sollten im Verzeichnis <code>tests/</code> (noch zu erstellen) hinzugefügt werden.</p>

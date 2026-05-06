@@ -1100,20 +1100,20 @@
 <p>This document describes the guidelines for contributing to the PO-Chatbot.</p>
 <h2 id="local-setup">Local Setup<a class="headerlink" href="#local-setup" title="Permanent link">&para;</a></h2>
 <ol>
-<li>Install developer dependencies:
+<li>Install developer dependencies:<br />
    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>pip<span class="w"> </span>install<span class="w"> </span>black<span class="w"> </span>ruff<span class="w"> </span>pytest<span class="w"> </span>interrogate
 </code></pre></div></li>
-<li>Enable git hooks (if available) or run checks manually.</li>
+<li>Enable git hooks (if available) or run checks manually.  </li>
 </ol>
 <h2 id="code-style">Code Style<a class="headerlink" href="#code-style" title="Permanent link">&para;</a></h2>
-<p>We use <strong>Black</strong> for formatting and <strong>Ruff</strong> for linting.
-- Formatting: <code>black src evaluation</code>
-- Linting: <code>ruff check src evaluation</code></p>
+<p>We use <strong>Black</strong> for formatting and <strong>Ruff</strong> for linting.<br />
+- Formatting: <code>black src evaluation</code><br />
+- Linting: <code>ruff check src evaluation</code>  </p>
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Use Google-style docstrings for all public functions and classes.</li>
-<li>Documentation is built with MkDocs. Run <code>mkdocs serve</code> to preview locally.</li>
+<li>Use Google-style docstrings for all public functions and classes.  </li>
+<li>Documentation is built with MkDocs. Run <code>mkdocs serve</code> to preview locally.  </li>
 </ul>
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
 <p>Current tests are located in the <code>evaluation/</code> directory. New unit tests should be added to the <code>tests/</code> directory (to be created).</p>

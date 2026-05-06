@@ -1096,27 +1096,27 @@
 <h2 id="ollama-verbindungsprobleme">Ollama Verbindungsprobleme<a class="headerlink" href="#ollama-verbindungsprobleme" title="Permanent link">&para;</a></h2>
 <p><strong>Fehler</strong>: <code>Fehler: Ollama ist nicht erreichbar.</code></p>
 <ul>
-<li><strong>Lösung</strong>: Stellen Sie sicher, dass Ollama im Hintergrund läuft (<code>ollama serve</code>). Prüfen Sie den Status mit <code>curl http://localhost:11434/api/tags</code>.</li>
-<li><strong>Lösung</strong>: Falls Ollama auf einem anderen Port oder Rechner läuft, passen Sie die <code>OLLAMA_URL</code> in den Skripten an.</li>
+<li><strong>Lösung</strong>: Stellen Sie sicher, dass Ollama im Hintergrund läuft (<code>ollama serve</code>). Prüfen Sie den Status mit <code>curl http://localhost:11434/api/tags</code>.  </li>
+<li><strong>Lösung</strong>: Falls Ollama auf einem anderen Port oder Rechner läuft, passen Sie die <code>OLLAMA_URL</code> in den Skripten an.  </li>
 </ul>
 <h2 id="keine-dokumente-gefunden">Keine Dokumente gefunden<a class="headerlink" href="#keine-dokumente-gefunden" title="Permanent link">&para;</a></h2>
 <p><strong>Fehler</strong>: <code>Es konnten keine relevanten Dokumente gefunden werden.</code></p>
 <ul>
-<li><strong>Ursache</strong>: Die Datenbank wurde noch nicht initialisiert.</li>
-<li><strong>Lösung</strong>: Führen Sie <code>python src/po_chatbot/ingest_data.py</code> aus. Prüfen Sie, ob in <code>data/text_extracted</code> Markdown-Dateien vorhanden sind.</li>
-<li><strong>Ursache</strong>: Der Fakultäts- oder Studiengangs-Filter ist zu restriktiv.</li>
-<li><strong>Lösung</strong>: Versuchen Sie es mit einer allgemeineren Einstellung.</li>
+<li><strong>Ursache</strong>: Die Datenbank wurde noch nicht initialisiert.  </li>
+<li><strong>Lösung</strong>: Führen Sie <code>python src/po_chatbot/ingest_data.py</code> aus. Prüfen Sie, ob in <code>data/text_extracted</code> Markdown-Dateien vorhanden sind.  </li>
+<li><strong>Ursache</strong>: Der Fakultäts- oder Studiengangs-Filter ist zu restriktiv.  </li>
+<li><strong>Lösung</strong>: Versuchen Sie es mit einer allgemeineren Einstellung.  </li>
 </ul>
 <h2 id="halluzinationen-in-den-antworten">Halluzinationen in den Antworten<a class="headerlink" href="#halluzinationen-in-den-antworten" title="Permanent link">&para;</a></h2>
 <p><strong>Problem</strong>: Der Chatbot erfindet Fakten oder nennt falsche Fristen.</p>
 <ul>
-<li><strong>Lösung</strong>: Erhöhen Sie die <code>REPEAT_PENALTY</code> oder senken Sie die <code>TEMPERATURE</code>.</li>
-<li><strong>Lösung</strong>: Überprüfen Sie die Qualität der extrahierten Texte in <code>data/chunks.json</code>. Nutzen Sie das Admin-Interface zur Korrektur.</li>
+<li><strong>Lösung</strong>: Erhöhen Sie die <code>REPEAT_PENALTY</code> oder senken Sie die <code>TEMPERATURE</code>.  </li>
+<li><strong>Lösung</strong>: Überprüfen Sie die Qualität der extrahierten Texte in <code>data/chunks.json</code>. Nutzen Sie das Admin-Interface zur Korrektur.  </li>
 </ul>
 <h2 id="langsame-antwortgenerierung">Langsame Antwortgenerierung<a class="headerlink" href="#langsame-antwortgenerierung" title="Permanent link">&para;</a></h2>
 <p><strong>Problem</strong>: Die Antwort dauert mehrere Minuten.</p>
 <ul>
-<li><strong>Lösung</strong>: Der PO-Chatbot läuft lokal auf Ihrer CPU/GPU. Ein System mit mindestens 16GB RAM und einer dedizierten GPU wird für das 14B-Modell empfohlen. Verwenden Sie ggf. ein kleineres Modell (z.B. <code>qwen2.5:7b</code>).</li>
+<li><strong>Lösung</strong>: Der PO-Chatbot läuft lokal auf Ihrer CPU/GPU. Ein System mit mindestens 16GB RAM und einer dedizierten GPU wird für das 14B-Modell empfohlen. Verwenden Sie ggf. ein kleineres Modell (z.B. <code>qwen2.5:7b</code>).  </li>
 </ul>
 
 
