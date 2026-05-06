@@ -1,3 +1,8 @@
+"""Analysis and plot generation for all 5 evaluation phases.
+
+Generates phase-specific plots and cross-phase comparisons based on the CSV logs.
+"""
+
 # Analyse und Plot-Generierung für alle 5 Evaluierungsphasen.
 # Erzeugt phasenspezifische Plots und phasenübergreifende Vergleiche.
 
