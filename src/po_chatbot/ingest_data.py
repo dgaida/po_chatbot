@@ -6,7 +6,7 @@ and populates both the ChromaDB vector store and a JSON file for BM25 search.
 
 import os
 import re
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Tuple, Union
 
 import chromadb
 import json
@@ -75,7 +75,7 @@ def ingest_data() -> None:
         metadata, body = parse_yaml_frontmatter(filepath)
 
         # Clean metadata for ChromaDB compatibility
-        safe_meta = {"source": filename}
+        safe_meta: Dict[str, Union[str, int, float, bool]] = {"source": filename}
         for k, v in metadata.items():
             if isinstance(v, (str, int, float, bool)):
                 safe_meta[k] = v
