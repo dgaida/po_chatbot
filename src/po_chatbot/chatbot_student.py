@@ -1,4 +1,8 @@
-# Studenten-Chatbot: Gradio-Oberfläche für prüfungsrechtliche Anfragen.
+"""Student Chatbot: Gradio interface for examination law queries.
+
+Provides a user interface for students to ask questions about examination regulations,
+deadlines, and forms. Uses a RAG pipeline with Ollama and Hybrid Retrieval.
+"""
 
 import os
 import json
@@ -6,21 +10,22 @@ import time
 import threading
 import requests
 from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
 import gradio as gr
 
 from retrieval_engine import HybridRetrievalEngine
 
-MODEL_NAME = "qwen2.5:14b"
-OLLAMA_URL = "http://localhost:11434/api/generate"
-TEMPERATURE = 0.0
-REPEAT_PENALTY = 1.0
-TOP_K_RETRIEVAL = 5
-NUM_PREDICT = 1024
-NUM_CTX = 4096
-TOP_P = 0.85
+MODEL_NAME: str = "qwen2.5:14b"
+OLLAMA_URL: str = "http://localhost:11434/api/generate"
+TEMPERATURE: float = 0.0
+REPEAT_PENALTY: float = 1.0
+TOP_K_RETRIEVAL: int = 5
+NUM_PREDICT: int = 1024
+NUM_CTX: int = 4096
+TOP_P: float = 0.85
 
-# Studiengänge pro Fakultät (aus YAML-Metadaten der Dokumente)
-STUDY_PROGRAMS = {
+# Study programs per faculty (from YAML metadata of documents)
+STUDY_PROGRAMS: Dict[str, List[str]] = {
     "F10": [
         "Medieninformatik",
         "Code & Context",
@@ -42,20 +47,20 @@ STUDY_PROGRAMS = {
     ],
 }
 
-# Mapping: UI-Fakultät → ChromaDB faculty-Filter
-FACULTY_FILTER_MAP = {
+# Mapping: UI faculty -> ChromaDB faculty filter
+FACULTY_FILTER_MAP: Dict[str, str] = {
     "F10": "F10",
     "F04": "F04",
     "F04 / F08": "F04, F08",
 }
 
-MAX_CONCURRENT = 1
-_semaphore = threading.Semaphore(MAX_CONCURRENT)
-_queue_lock = threading.Lock()
-_queue_count = 0
-_avg_gen_time = 10.0
+MAX_CONCURRENT: int = 1
+_semaphore: threading.Semaphore = threading.Semaphore(MAX_CONCURRENT)
+_queue_lock: threading.Lock = threading.Lock()
+_queue_count: int = 0
+_avg_gen_time: float = 10.0
 
-SYSTEM_PROMPT = """Sie sind ein präziser Studienberater-Assistent der TH Köln.
+SYSTEM_PROMPT: str = """Sie sind ein präziser Studienberater-Assistent der TH Köln.
 Beantworten Sie die Fragen der Studierenden AUSSCHLIESSLICH basierend auf dem bereitgestellten Kontext. Erfinden Sie keine Fakten. Wenn keine Antwort im Kontext steht, sagen Sie: "Dazu liegen mir keine Informationen vor."
 
 WICHTIG: Nennen Sie NIEMALS Dokument-Nummern wie "Dokument 1", "Quelle 3" oder "laut Dokument 5" im Fließtext. Nutzen Sie ausschließlich die Informationen aus den Texten selbst.
@@ -66,26 +71,41 @@ Sie finden den Antrag auf Zulassung im entsprechenden Formular des Prüfungsserv
 Link zum Dokument: https://www.th-koeln.de/beispiel_link.pdf
 """
 
-# Globale Variablen
-engine = None
+# Global variables
+engine: Optional[HybridRetrievalEngine] = None
 
-CHAT_LOG = os.path.join("data", "evaluation_logs", "student_chat_history.jsonl")
-PENDING_QUEUE = os.path.join("data", "evaluation_logs", "hil_pending.jsonl")
+CHAT_LOG: str = os.path.join("data", "evaluation_logs", "student_chat_history.jsonl")
+PENDING_QUEUE: str = os.path.join("data", "evaluation_logs", "hil_pending.jsonl")
 
 
-def init_engine():
+def init_engine() -> None:
+    """Initializes the retrieval engine if it hasn't been initialized yet."""
     global engine
     if engine is None:
         engine = HybridRetrievalEngine()
 
 
-def log_json(filepath, entry):
+def log_json(filepath: str, entry: Dict[str, Any]) -> None:
+    """Logs a dictionary as a JSON line to a file.
+
+    Args:
+        filepath: Path to the log file.
+        entry: Dictionary entry to log.
+    """
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     with open(filepath, "a", encoding="utf-8") as f:
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
-def generate_with_ollama(prompt):
+def generate_with_ollama(prompt: str) -> str:
+    """Generates a response from the local Ollama instance.
+
+    Args:
+        prompt: The full prompt for the LLM.
+
+    Returns:
+        The generated response string or an error message.
+    """
     payload = {
         "model": MODEL_NAME,
         "prompt": prompt,
@@ -101,31 +121,50 @@ def generate_with_ollama(prompt):
     try:
         resp = requests.post(OLLAMA_URL, json=payload, timeout=300)
         if resp.status_code == 200:
-            return resp.json().get("response", "").strip()
+            return str(resp.json().get("response", "")).strip()
         return f"Fehler: Ollama HTTP {resp.status_code}"
     except requests.ConnectionError:
-        return "Fehler: Ollama ist nicht erreichbar. Bitte stellen Sie sicher, dass Ollama lokal läuft (ollama serve)."
+        return (
+            "Fehler: Ollama ist nicht erreichbar. Bitte stellen Sie sicher, "
+            "dass Ollama lokal läuft (ollama serve)."
+        )
     except Exception as e:
         return f"Fehler bei der Antwortgenerierung: {e}"
 
 
-def update_study_programs(faculty):
-    # Aktualisiert die Studiengänge basierend auf der Fakultät.
+def update_study_programs(faculty: str) -> Dict[str, Any]:
+    """Updates the study program choices based on the selected faculty.
+
+    Args:
+        faculty: The selected faculty.
+
+    Returns:
+        A Gradio update dictionary for the dropdown.
+    """
     programs = STUDY_PROGRAMS.get(faculty, [])
     return gr.update(choices=programs, value=programs[0] if programs else None)
 
 
-def answer_question(question, faculty, study_program):
-    # RAG-Pipeline: Retrieve → Generate → Antwort + Quellen (mit Queue).
-    global _queue_count, _avg_gen_time
+def answer_question(question: str, faculty: str, study_program: str) -> Tuple[str, str]:
+    """RAG pipeline: Retrieve -> Generate -> Answer + Sources (with queue management).
+
+    Args:
+        question: User's question.
+        faculty: User's faculty.
+        study_program: User's study program.
+
+    Returns:
+        A tuple of (answer, sources_text).
+    """
+    global _queue_count
     if not question.strip():
         return "", ""
 
-    # Queue-Management: Warteposition anzeigen
+    # Queue management: increment waiting count
     with _queue_lock:
         _queue_count += 1
 
-    # Warte auf freien Slot
+    # Wait for a free slot
     _semaphore.acquire()
     try:
         return _process_question(question, faculty, study_program)
@@ -135,15 +174,26 @@ def answer_question(question, faculty, study_program):
             _queue_count -= 1
 
 
-def _process_question(question, faculty, study_program):
-    # Interne Verarbeitung nach Freigabe
+def _process_question(question: str, faculty: str, study_program: str) -> Tuple[str, str]:
+    """Internal processing of the question after queue slot is granted.
+
+    Args:
+        question: User's question.
+        faculty: User's faculty.
+        study_program: User's study program.
+
+    Returns:
+        A tuple of (answer, sources_text).
+    """
     global _avg_gen_time
     init_engine()
+    if engine is None:
+        return "Fehler: Retrieval-Engine konnte nicht initialisiert werden.", ""
 
-    # Faculty-Filter mapping (F04/F08 → "F04, F08" für ChromaDB)
+    # Faculty filter mapping
     db_faculty = FACULTY_FILTER_MAP.get(faculty, faculty)
 
-    # Retrieval mit Studiengang-Filter
+    # Retrieval
     start = time.time()
     results = engine.search(
         question, db_faculty, top_k=TOP_K_RETRIEVAL, study_program_filter=study_program
@@ -159,7 +209,7 @@ def _process_question(question, faculty, study_program):
             "Bitte formulieren Sie Ihre Frage um oder wählen Sie eine andere Fakultät."
         ), ""
 
-    # Kontext aufbauen und eindeutige Quellen sammeln
+    # Build context and collect unique sources
     context_str = ""
     seen_sources = set()
     sources_display = []
@@ -184,8 +234,12 @@ def _process_question(question, faculty, study_program):
                 entry += f"  \n[Studienverlaufsplan]({svp_url})"
             sources_display.append(entry)
 
-    # Antwort generieren
-    full_prompt = f"{SYSTEM_PROMPT}\n\nMETADATEN DES STUDIERENDEN:\nFakultät: {faculty}\nStudiengang: {study_program}\n\nKONTEXT AUS DATENBANK:\n{context_str}\n\nFRAGE:\n{question}"
+    # Generate answer
+    full_prompt = (
+        f"{SYSTEM_PROMPT}\n\nMETADATEN DES STUDIERENDEN:\nFakultät: {faculty}\n"
+        f"Studiengang: {study_program}\n\nKONTEXT AUS DATENBANK:\n{context_str}\n\n"
+        f"FRAGE:\n{question}"
+    )
 
     start = time.time()
     answer = generate_with_ollama(full_prompt)
@@ -214,7 +268,7 @@ def _process_question(question, faculty, study_program):
     return answer, sources_text
 
 
-# Gradio UI — Studenten-Oberfläche
+# Gradio UI - Student Interface
 with gr.Blocks(title="TH Köln Prüfungsamt-Assistent") as demo:
 
     gr.HTML("""
@@ -258,7 +312,7 @@ with gr.Blocks(title="TH Köln Prüfungsamt-Assistent") as demo:
     gr.HTML("<h3 style='color:#0b3d91; margin:5px 0;'>Verwendete Quellen</h3>")
     sources_output = gr.Markdown(value="*Noch keine Anfrage gestellt.*")
 
-    # Warteschlangen-Anzeige
+    # Queue status display
     queue_status = gr.HTML(value="", visible=False)
 
     gr.HTML("""
@@ -267,21 +321,28 @@ with gr.Blocks(title="TH Köln Prüfungsamt-Assistent") as demo:
     </p>
     """)
 
-    # Ereignisse
+    # Events
     faculty_dropdown.change(
         fn=update_study_programs,
         inputs=[faculty_dropdown],
         outputs=[study_program_dropdown],
     )
 
-    def show_queue_status():
-        # Zeigt aktuellen Queue-Status an.
+    def show_queue_status() -> Dict[str, Any]:
+        """Shows the current queue status.
+
+        Returns:
+            A Gradio update dictionary for the HTML component.
+        """
         with _queue_lock:
             waiting = max(0, _queue_count - MAX_CONCURRENT)
         if waiting > 0:
             est_wait = int(round(waiting * _avg_gen_time, 0))
             return gr.update(
-                value=f'<div style="background:#e8f4fd; border:1px solid #0b3d91; border-radius:6px; padding:10px 15px; margin:10px 0;">⏳ <strong>{waiting} Anfrage(n) in der Warteschlange</strong> — geschätzte Wartezeit: ~{est_wait}s</div>',
+                value=f'<div style="background:#e8f4fd; border:1px solid #0b3d91; '
+                f'border-radius:6px; padding:10px 15px; margin:10px 0;">⏳ '
+                f'<strong>{waiting} Anfrage(n) in der Warteschlange</strong> — '
+                f'geschätzte Wartezeit: ~{est_wait}s</div>',
                 visible=True,
             )
         return gr.update(value="", visible=False)
@@ -306,14 +367,15 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--public", action="store_true", help="Über ngrok öffentlich erreichbar machen"
+        "--public", action="store_true", help="Make publicly accessible via ngrok"
     )
     args = parser.parse_args()
 
     print(
-        f"Modell: {MODEL_NAME} | temp={TEMPERATURE} | rp={REPEAT_PENALTY} | top_k={TOP_K_RETRIEVAL}"
+        f"Model: {MODEL_NAME} | temp={TEMPERATURE} | rp={REPEAT_PENALTY} | "
+        f"top_k={TOP_K_RETRIEVAL}"
     )
-    print(f"Max. gleichzeitige Anfragen: {MAX_CONCURRENT}")
+    print(f"Max concurrent requests: {MAX_CONCURRENT}")
     demo.queue(default_concurrency_limit=MAX_CONCURRENT)
 
     if args.public:
@@ -321,7 +383,7 @@ if __name__ == "__main__":
 
         public_url = ngrok.connect(7860)
         print(f"\n{'='*60}")
-        print(f"  ÖFFENTLICHER LINK: {public_url}")
+        print(f"  PUBLIC LINK: {public_url}")
         print(f"{'='*60}\n")
         demo.launch(server_name="0.0.0.0", server_port=7860)  # nosec B104
     else:

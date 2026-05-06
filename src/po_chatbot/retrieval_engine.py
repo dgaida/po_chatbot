@@ -1,10 +1,14 @@
-# Hybride Retrieval-Engine für das RAG-System.
-# Kombiniert dichte Vektorsuche (ChromaDB) mit dünner Schlüsselwortsuche (BM25)
-# und wendet einen Cross-Encoder für Re-Ranking an. Nutzt strikte Metadaten-Filterung.
+"""Hybrid Retrieval Engine for the RAG system.
+
+Combines dense vector search (ChromaDB) with sparse keyword search (BM25)
+and applies a Cross-Encoder for re-ranking. Uses strict metadata filtering.
+"""
 
 import os
 import json
 import re
+from typing import Any, Dict, List, Optional, Union
+
 import chromadb
 from chromadb.utils import embedding_functions
 from sentence_transformers import CrossEncoder
@@ -12,31 +16,45 @@ from rank_bm25 import BM25Okapi
 
 
 class HybridRetrievalEngine:
-    def __init__(self):
-        # Initialisiert die Retrieval-Engine-Komponenten: ChromaDB, BM25 und CrossEncoder.
-        self.db_path = os.path.join("data", "chroma_db")
-        self.client = chromadb.PersistentClient(path=self.db_path)
-        self.emb_func = embedding_functions.SentenceTransformerEmbeddingFunction(
-            model_name="intfloat/multilingual-e5-large"
+    """Engine for performing hybrid retrieval using vector and keyword search."""
+
+    def __init__(self) -> None:
+        """Initializes the retrieval engine components: ChromaDB, BM25 and CrossEncoder."""
+        self.db_path: str = os.path.join("data", "chroma_db")
+        self.client: chromadb.PersistentClient = chromadb.PersistentClient(
+            path=self.db_path
+        )
+        self.emb_func: embedding_functions.SentenceTransformerEmbeddingFunction = (
+            embedding_functions.SentenceTransformerEmbeddingFunction(
+                model_name="intfloat/multilingual-e5-large"
+            )
         )
         self.collection = self.client.get_collection(
             name="th_koeln_rules", embedding_function=self.emb_func
         )
 
-        self.chunks_path = os.path.join("data", "chunks.json")
+        self.chunks_path: str = os.path.join("data", "chunks.json")
         with open(self.chunks_path, "r", encoding="utf-8") as f:
-            self.chunks = json.load(f)
+            self.chunks: List[Dict[str, Any]] = json.load(f)
 
-        # BM25 läuft auf einem für lexikalisches Matching optimierten Text (Titel/Typ + Inhalt)
-        tokenized_corpus = [
+        # BM25 runs on a text optimized for lexical matching (title/type + content)
+        tokenized_corpus: List[List[str]] = [
             self._tokenize(doc.get("bm25_text", doc.get("content", "")))
             for doc in self.chunks
         ]
-        self.bm25 = BM25Okapi(tokenized_corpus)
+        self.bm25: BM25Okapi = BM25Okapi(tokenized_corpus)
 
-        self.reranker = CrossEncoder("BAAI/bge-reranker-v2-m3")
+        self.reranker: CrossEncoder = CrossEncoder("BAAI/bge-reranker-v2-m3")
 
     def _normalize_study_program(self, s: str) -> str:
+        """Normalizes a study program name for comparison.
+
+        Args:
+            s: The study program name to normalize.
+
+        Returns:
+            The normalized study program name.
+        """
         if not s:
             return ""
         s = s.lower().strip()
@@ -45,8 +63,17 @@ class HybridRetrievalEngine:
         return s
 
     def _meta_matches_study_program(
-        self, meta: dict, study_program_filter: str | None
+        self, meta: Dict[str, Any], study_program_filter: Optional[str]
     ) -> bool:
+        """Checks if the metadata matches the study program filter.
+
+        Args:
+            meta: The metadata dictionary of a chunk.
+            study_program_filter: The study program name to filter by.
+
+        Returns:
+            True if it matches, False otherwise.
+        """
         if not study_program_filter:
             return True
         meta_sp = self._normalize_study_program((meta or {}).get("study_program", ""))
@@ -60,14 +87,27 @@ class HybridRetrievalEngine:
             return True
         return wanted in meta_sp or meta_sp in wanted
 
-    def _tokenize(self, text):
-        # Einfacher Tokenizer für BM25-Verarbeitung.
+    def _tokenize(self, text: str) -> List[str]:
+        """Simple tokenizer for BM25 processing.
+
+        Args:
+            text: The text to tokenize.
+
+        Returns:
+            A list of tokens.
+        """
         return re.findall(r"\w+", text.lower())
 
-    def _has_auslauf_intent(self, q_lower):
-        # Erkennt ob die Frage auf eine Auslaufordnung abzielt.
-        # Deckt ab: explizites 'auslauf', PO-Wechsel, Modul-Anerkennung/Anrechnung.
-        # Direkte Auslauf-Keywords
+    def _has_auslauf_intent(self, q_lower: str) -> bool:
+        """Detects if the question aims at a phase-out regulation (Auslaufordnung).
+
+        Args:
+            q_lower: The lowercase question string.
+
+        Returns:
+            True if phase-out intent is detected, False otherwise.
+        """
+        # Direct phase-out keywords
         if any(
             w in q_lower
             for w in [
@@ -81,7 +121,7 @@ class HybridRetrievalEngine:
             ]
         ):
             return True
-        # PO-Kontext erkennen: 'prüfungsordnung' oder 'po '
+        # PO context detection: 'prüfungsordnung' or 'po '
         has_po_context = (
             "prüfungsordnung" in q_lower
             or "neue po" in q_lower
@@ -89,7 +129,7 @@ class HybridRetrievalEngine:
             or "alten po" in q_lower
             or "alte po" in q_lower
         )
-        # Anerkennungs-Keywords (Synonyme für Modulanerkennung)
+        # Recognition keywords
         recognition_kw = any(
             w in q_lower
             for w in [
@@ -107,25 +147,33 @@ class HybridRetrievalEngine:
                 "gültig",
             ]
         )
-        # Wechsel-Keywords
+        # Switching keywords
         switch_kw = any(
             w in q_lower for w in ["wechsl", "wechsel", "umstieg", "umsteig"]
         )
-        # Anerkennung/Wechsel + PO-Kontext = Auslaufordnung
+        # Recognition/Switching + PO context = phase-out regulation
         if has_po_context and (recognition_kw or switch_kw):
             return True
-        # Eigenständige Anerkennung mit Modul-Kontext (ohne explizite PO-Nennung)
+        # Independent recognition with module context
         if recognition_kw and any(w in q_lower for w in ["modul", "leistung"]):
             return True
         return False
 
-    def _apply_heuristic_boost(self, question, candidates):
-        # Keyword-intent-basiertes Boosting. Löst das Retrieval-Problem bei
-        # semantisch ähnlichen aber inhaltlich verschiedenen Dokumenten
-        # (z.B. 'Verlängerung' vs 'Zulassung', 'Prüfungsordnung' vs 'Formular').
+    def _apply_heuristic_boost(
+        self, question: str, candidates: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
+        """Applies rule-based priority boosting to candidates.
+
+        Args:
+            question: The user question.
+            candidates: List of retrieval candidates.
+
+        Returns:
+            The list of candidates with updated priorities.
+        """
         q_lower = question.lower()
 
-        # Absichtserkennung aus der Frage
+        # Intent recognition from the question
         form_intent = any(
             w in q_lower
             for w in ["antrag", "formular", "anmeldung", "bescheinigung", "zulassung"]
@@ -145,33 +193,33 @@ class HybridRetrievalEngine:
             title = cand["meta"].get("title", "").lower()
             doc_type = cand["meta"].get("doc_type", "").lower()
 
-            # Auslaufordnung verstärken, reguläre PO herabstufen
+            # Boost phase-out, demote regular PO
             if auslauf_intent:
                 if "auslauf" in title or "auslauf" in doc_type:
-                    priority -= 250  # Stärkste Verstärkung
+                    priority -= 250
                 elif "prüfungsordnung" in doc_type:
-                    priority += 30  # Herabstufen: reguläre PO ist nicht Auslaufordnung
+                    priority += 30
 
-            # Verlängerung verstärken, Zulassung/Anmeldung herabstufen
+            # Boost extension, demote admission/registration
             elif verlaengerung_intent:
                 if "verlängerung" in title:
-                    priority -= 200  # Starke Verstärkung
+                    priority -= 200
                 elif any(w in title for w in ["zulassung", "anmeldung"]):
-                    priority += 50  # Herabstufen: Zulassung ist nicht Verlängerung
+                    priority += 50
 
-            # Formular/Anmeldung-Erkennung (nur wenn nicht Verlängerung)
+            # Form/registration recognition
             elif form_intent:
                 if any(w in doc_type for w in ["formular", "antrag"]) or any(
                     w in title for w in ["formular", "antrag", "anmeldung"]
                 ):
                     priority -= 100
 
-            # PO-Erkennung: Prüfungsordnungs-Texte verstärken, Formulare herabstufen
+            # PO recognition: Boost PO texts, demote forms
             if po_intent and not auslauf_intent:
                 if "prüfungsordnung" in doc_type or "prüfungsordnung" in title:
-                    priority -= 150  # Starke Verstärkung für PO-Texte
+                    priority -= 150
                 elif any(w in doc_type for w in ["formular", "antrag"]):
-                    priority += 50  # Herabstufen: Formulare sind keine PO-Texte
+                    priority += 50
 
             cand["priority"] = priority
             boosted_candidates.append(cand)
@@ -179,13 +227,22 @@ class HybridRetrievalEngine:
         return boosted_candidates
 
     def _inject_keyword_matches(
-        self, question, faculty_filter, study_program_filter, candidates_map
-    ):
-        # Injiziert Chunks deren Titel explizit genannte Begriffe enthalten.
-        # Löst das Problem, dass semantisch ähnliche aber inhaltlich verschiedene
-        # Dokumente (z.B. PO4 vs PO5) vom Vektor/BM25-Retrieval nicht beide gefunden werden.
+        self,
+        question: str,
+        faculty_filter: str,
+        study_program_filter: Optional[str],
+        candidates_map: Dict[int, Dict[str, Any]],
+    ) -> None:
+        """Injects chunks whose titles contain explicitly mentioned terms.
+
+        Args:
+            question: The user question.
+            faculty_filter: The faculty to filter by.
+            study_program_filter: The study program to filter by.
+            candidates_map: Map of candidate IDs to candidate data.
+        """
         q_lower = question.lower()
-        # Erkenne explizite Referenzen in der Frage
+        # Recognize explicit references in the question
         title_keywords = []
         if "po5" in q_lower or "po 5" in q_lower:
             title_keywords.append("po5")
@@ -226,11 +283,27 @@ class HybridRetrievalEngine:
                     "origin": "keyword_inject",
                 }
 
-    def search(self, question, faculty_filter, top_k=5, study_program_filter=None):
-        # Führt eine hybride Suche durch: Vektor + BM25, gefolgt von Re-Ranking.
-        candidates_map = {}
+    def search(
+        self,
+        question: str,
+        faculty_filter: str,
+        top_k: int = 5,
+        study_program_filter: Optional[str] = None,
+    ) -> Dict[str, List[List[Any]]]:
+        """Performs a hybrid search: Vector + BM25, followed by re-ranking.
 
-        # 1. Semantische Vektorsuche (breiterer Pool)
+        Args:
+            question: The user question.
+            faculty_filter: The faculty to filter by.
+            top_k: Number of results to return.
+            study_program_filter: The study program to filter by.
+
+        Returns:
+            A dictionary containing retrieved documents and their metadata.
+        """
+        candidates_map: Dict[int, Dict[str, Any]] = {}
+
+        # 1. Semantic Vector Search
         vec_res = self.collection.query(
             query_texts=[question], n_results=30, where={"faculty": faculty_filter}
         )
@@ -247,7 +320,7 @@ class HybridRetrievalEngine:
                     "origin": "vector",
                 }
 
-        # 2. Dünne Schlüsselwortsuche (BM25)
+        # 2. Keyword Search (BM25)
         tokenized_query = self._tokenize(question)
         bm25_scores = self.bm25.get_scores(tokenized_query)
         top_indices = sorted(
@@ -268,7 +341,7 @@ class HybridRetrievalEngine:
                         "origin": "bm25",
                     }
 
-        # 3. Schlüsselwort-Einspeisung: Explizit referenzierte Dokumente erzwingen
+        # 3. Keyword Injection
         self._inject_keyword_matches(
             question, faculty_filter, study_program_filter, candidates_map
         )
@@ -277,23 +350,22 @@ class HybridRetrievalEngine:
         if not candidates:
             return {"documents": [[]], "metadatas": [[]]}
 
-        # 4. Regelbasiertes Prioritäts-Boosting anwenden
+        # 4. Rule-based priority boosting
         boosted = self._apply_heuristic_boost(question, candidates)
         boosted.sort(key=lambda x: x["priority"])
 
-        # Kandidaten begrenzen für effizientes Re-Ranking
+        # Limit candidates for efficient re-ranking
         to_rank = boosted[:15]
 
-        # 5. CrossEncoder-Neugewichtung
+        # 5. CrossEncoder Re-Ranking
         docs_text = [c["doc"] for c in to_rank]
         pairs = [[question, doc] for doc in docs_text]
         scores = self.reranker.predict(pairs)
 
-        # Integration der heuristischen Verstärkung in den finalen Neugewichtungs-Score
+        # Integrate heuristic boost into final score
         final_ranked = []
         for score, cand in zip(scores, to_rank):
-            # Der Neugewichtungs-Score (meist -10 bis +10) wird mit der manuellen Verstärkung kombiniert.
-            adjusted_score = score - cand["priority"]
+            adjusted_score = float(score) - cand["priority"]
             final_ranked.append((adjusted_score, cand))
 
         final_ranked.sort(key=lambda x: x[0], reverse=True)
@@ -314,6 +386,5 @@ if __name__ == "__main__":
 
     print("Suchergebnisse (Top 3):")
     for i, meta in enumerate(res["metadatas"][0][:3]):
-        # Zeigt den sauberen Titel an (fällt auf die Quelle/URL zurück, falls der Titel fehlt)
         titel = meta.get("title", meta["source"])
         print(f"{i+1}. {titel} (Typ: {meta.get('doc_type', 'k.A.')})")

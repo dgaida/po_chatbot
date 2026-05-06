@@ -1,9 +1,8 @@
-# Skript für erweiterte Grid-Search-Evaluierung des RAG-Systems.
-# Vergleicht lokale und Cloud-Modelle mit verschiedenen Parameterkombinationen.
-# Phase 1: Kleine Modelle Grid Search (gemma2, qwen2.5, mistral, llama3.1)
-# Phase 2: Große Modelle Grid Search (phi4, qwen2.5:14b)
-# Phase 3: Head-to-Head beste Kleine vs beste Große
-# Phase 4: Beste Lokale vs Cloud (Gemini, Groq)
+"""Script for expanded grid search evaluation of the RAG system.
+
+Compares local and cloud models with various parameter combinations.
+Phases range from small model grid search to cloud model comparisons.
+"""
 
 import os
 import sys
@@ -11,57 +10,51 @@ import json
 import csv
 import time
 import re
+from typing import Any, Dict, List, Optional, Union
+
 import requests
 from dotenv import load_dotenv
 from tqdm import tqdm
+
 from retrieval_engine import HybridRetrievalEngine
 from evaluation_metrics import RAGEvaluator
 from llm_client import LLMClient
 
 load_dotenv()
 
-# Gemeinsame Parameter
-FIXED_TOP_P = 0.85
-FIXED_NUM_CTX = 4096
+# Shared parameters
+FIXED_TOP_P: float = 0.85
+FIXED_NUM_CTX: int = 4096
 
-# Grid für Parameter-Suche (Phase 1 + 2)
-TEMPERATURE_VALUES = [0.0, 0.2, 0.4]
-REPEAT_PENALTY_VALUES = [1.0, 1.1, 1.2]
-TOP_K_VALUES = [3, 5, 7, 9]
+# Grid for parameter search
+TEMPERATURE_VALUES: List[float] = [0.0, 0.2, 0.4]
+REPEAT_PENALTY_VALUES: List[float] = [1.0, 1.1, 1.2]
+TOP_K_VALUES: List[int] = [3, 5, 7, 9]
 
-# Phase-Konfigurationen
-
-# Phase 1: Kleine Modelle (7B-Klasse) - Grid Search
-# 4 Modelle x 3 Temps x 3 RP x 4 Top-K = 144 Configs x 21 Fragen = 3024 Evals
-PHASE1_MODELS = [
+# Phase configurations
+PHASE1_MODELS: List[Dict[str, str]] = [
     {"provider": "local", "model": "gemma2"},
     {"provider": "local", "model": "qwen2.5"},
     {"provider": "local", "model": "mistral"},
     {"provider": "local", "model": "llama3.1"},
 ]
-PHASE1_CSV = "data/evaluation_logs/phase1_small_models_grid.csv"
+PHASE1_CSV: str = "data/evaluation_logs/phase1_small_models_grid.csv"
 
-# Phase 2: Große Modelle (14B-Klasse) - Grid Search
-# 2 Modelle x 3 Temps x 3 RP x 4 Top-K = 72 Configs x 21 Fragen = 1512 Evals
-PHASE2_MODELS = [
+PHASE2_MODELS: List[Dict[str, str]] = [
     {"provider": "local", "model": "phi4"},
     {"provider": "local", "model": "qwen2.5:14b"},
 ]
-PHASE2_CSV = "data/evaluation_logs/phase2_large_models_grid.csv"
+PHASE2_CSV: str = "data/evaluation_logs/phase2_large_models_grid.csv"
 
-# Phase 3: Head-to-Head (beste Config pro Modell aus Phase 1+2)
-# 6 Modelle x 1 Config x 21 Fragen = 126 Evals
-PHASE3_BEST_CONFIGS = {
-    # 7B (Phase 1 Ergebnisse)
+PHASE3_BEST_CONFIGS: Dict[str, Dict[str, Union[float, int]]] = {
     "gemma2": {"temperature": 0.0, "repeat_penalty": 1.0, "top_k": 5},
     "qwen2.5": {"temperature": 0.4, "repeat_penalty": 1.0, "top_k": 3},
     "mistral": {"temperature": 0.0, "repeat_penalty": 1.2, "top_k": 5},
     "llama3.1": {"temperature": 0.2, "repeat_penalty": 1.2, "top_k": 5},
-    # 14B (Phase 2 Ergebnisse)
     "phi4": {"temperature": 0.4, "repeat_penalty": 1.0, "top_k": 5},
     "qwen2.5:14b": {"temperature": 0.0, "repeat_penalty": 1.0, "top_k": 5},
 }
-PHASE3_MODELS = [
+PHASE3_MODELS: List[Dict[str, str]] = [
     {"provider": "local", "model": "gemma2"},
     {"provider": "local", "model": "qwen2.5"},
     {"provider": "local", "model": "mistral"},
@@ -69,31 +62,25 @@ PHASE3_MODELS = [
     {"provider": "local", "model": "phi4"},
     {"provider": "local", "model": "qwen2.5:14b"},
 ]
-PHASE3_CSV = "data/evaluation_logs/phase3_head_to_head.csv"
+PHASE3_CSV: str = "data/evaluation_logs/phase3_head_to_head.csv"
 
-# Phase 4: Beste Lokale + Cloud
-# 4 Modelle x 1 Config x 21 Fragen = 84 Evals
-PHASE4_MODELS = [
-    # Beste 2 Lokale
+PHASE4_MODELS: List[Dict[str, str]] = [
     {"provider": "local", "model": "qwen2.5:14b"},
     {"provider": "local", "model": "phi4"},
-    # Cloud
     {"provider": "groq", "model": "llama-3.3-70b-versatile"},
     {"provider": "gemini", "model": "gemini-2.5-flash"},
 ]
-PHASE4_CLOUD_CONFIGS = {
+PHASE4_CLOUD_CONFIGS: Dict[str, Dict[str, float]] = {
     "llama-3.3-70b-versatile": {"temperature": 0.0},
     "gemini-2.5-flash": {"temperature": 0.0},
 }
-PHASE4_CSV = "data/evaluation_logs/phase4_local_vs_cloud.csv"
+PHASE4_CSV: str = "data/evaluation_logs/phase4_local_vs_cloud.csv"
 
-# Phase 5: Fine-Grained Top-K Analyse für bestes Modell
-# 1 Modell x 1 Top-K x 3 Temps x 3 RP x 21 Fragen = 189 Evals
-PHASE5_MODEL = {"provider": "local", "model": "qwen2.5:14b"}
-PHASE5_TOP_K_VALUES = [6]
-PHASE5_CSV = "data/evaluation_logs/phase5_topk_fine_grained.csv"
+PHASE5_MODEL: Dict[str, str] = {"provider": "local", "model": "qwen2.5:14b"}
+PHASE5_TOP_K_VALUES: List[int] = [6]
+PHASE5_CSV: str = "data/evaluation_logs/phase5_topk_fine_grained.csv"
 
-SYSTEM_PROMPT = """Sie sind ein präziser Studienberater-Assistent der TH Köln.
+SYSTEM_PROMPT: str = """Sie sind ein präziser Studienberater-Assistent der TH Köln.
 Ihre Aufgabe ist es, studentische Fragen AUSSCHLIESSLICH basierend auf dem bereitgestellten Datenbank-Kontext zu beantworten.
 
 WICHTIG:
@@ -121,19 +108,50 @@ Wenn die exakte Antwort auf die Frage (oder eine der Teilfragen) nicht im Kontex
 """
 
 
-def generate_response(provider, model, full_prompt, temp, extra_opts=None):
+def generate_response(
+    provider: str,
+    model: str,
+    full_prompt: str,
+    temp: float,
+    extra_opts: Optional[Dict[str, Any]] = None,
+) -> str:
+    """Generates a response using either a local or cloud model.
+
+    Args:
+        provider: The model provider ('local', 'groq', 'gemini').
+        model: The model name.
+        full_prompt: The full prompt text.
+        temp: Temperature setting.
+        extra_opts: Extra options for the generator.
+
+    Returns:
+        The generated response string.
+    """
     if provider == "local":
         return generate_with_ollama_direct(model, full_prompt, temp, extra_opts)
     else:
         return generate_with_cloud_model(provider, model, full_prompt, temp)
 
 
-def generate_with_cloud_model(provider, model, full_prompt, temp):
+def generate_with_cloud_model(
+    provider: str, model: str, full_prompt: str, temp: float
+) -> str:
+    """Generates a response from a cloud-based LLM.
+
+    Args:
+        provider: Cloud provider name.
+        model: Model name.
+        full_prompt: Full prompt text.
+        temp: Temperature setting.
+
+    Returns:
+        The generated response string or error.
+    """
     try:
         if provider == "gemini" and isinstance(model, str):
             if not model.startswith("models/"):
                 model = f"models/{model}"
-        # LLMClient default max_tokens=512. Das kann bei RAG-Antworten (inkl. Struktur) zu abgeschnittenen Outputs führen
+
         max_tokens = 768 if provider == "groq" else 1536
         client = LLMClient(
             api_choice=provider, llm=model, temperature=temp, max_tokens=max_tokens
@@ -165,7 +183,23 @@ def generate_with_cloud_model(provider, model, full_prompt, temp):
         return f"FEHLER: Cloud-Modell {provider}/{model} - {e}"
 
 
-def generate_with_ollama_direct(model_name, full_prompt, temp, extra_opts=None):
+def generate_with_ollama_direct(
+    model_name: str,
+    full_prompt: str,
+    temp: float,
+    extra_opts: Optional[Dict[str, Any]] = None,
+) -> str:
+    """Generates a response directly from local Ollama API.
+
+    Args:
+        model_name: Model name.
+        full_prompt: Full prompt text.
+        temp: Temperature setting.
+        extra_opts: Extra Ollama options.
+
+    Returns:
+        The generated response string or error.
+    """
     url = "http://localhost:11434/api/generate"
     options = {"temperature": temp, "num_predict": 1024}
     if extra_opts:
@@ -179,31 +213,49 @@ def generate_with_ollama_direct(model_name, full_prompt, temp, extra_opts=None):
     try:
         response = requests.post(url, json=payload, timeout=300)
         if response.status_code == 200:
-            return response.json().get("response", "").strip()
+            return str(response.json().get("response", "")).strip()
         return f"FEHLER: Lokaler Ollama HTTP Status {response.status_code}"
     except Exception as e:
         return f"FEHLER: Lokaler Ollama Absturz - {e}"
 
 
-def _needs_multiple_sources(question: str, item: dict = None) -> bool:
-    # Prüft, ob die Frage mehrere Quellen benötigt.
+def _needs_multiple_sources(question: str, item: Optional[Dict[str, Any]] = None) -> bool:
+    """Checks if the question likely requires multiple source documents.
+
+    Args:
+        question: User question.
+        item: Optional question metadata.
+
+    Returns:
+        True if multiple sources are likely needed.
+    """
     q = (question or "").lower()
-    # PO-Vergleich: "PO4 und PO5", "Unterschied", "zwischen"
     if ("po" in q or "prüfungsordnung" in q) and any(
         w in q for w in ["unterschied", "zwischen", "po4", "po5", "po6"]
     ):
         return True
-    # Multi-Intent mit Formular-Frage: "Wo finde ich das Formular?"
     if item and item.get("multi_intent_parts", 1) >= 2:
         return True
-    # Mehrere expected_sources in Ground Truth
     if item and len(item.get("expected_sources", [])) >= 2:
         return True
     return False
 
 
-def _pick_relevant_sources(metas, faculty: str, study_program: str, max_sources: int):
-    picked = []
+def _pick_relevant_sources(
+    metas: List[Dict[str, Any]], faculty: str, study_program: str, max_sources: int
+) -> List[str]:
+    """Filters and picks the most relevant source URLs from metadata.
+
+    Args:
+        metas: List of metadata dictionaries.
+        faculty: Faculty filter.
+        study_program: Study program filter.
+        max_sources: Maximum number of sources to pick.
+
+    Returns:
+        A list of picked source URLs.
+    """
+    picked: List[str] = []
     seen = set()
     faculty_norm = (faculty or "").strip().lower()
     sp_norm = (study_program or "").strip().lower()
@@ -225,7 +277,6 @@ def _pick_relevant_sources(metas, faculty: str, study_program: str, max_sources:
             continue
 
         meta_sp = str((meta or {}).get("study_program", "")).strip().lower()
-        # "Alle ..." oder "Allgemein" Dokumente immer akzeptieren (z.B. Verlängerungsformulare)
         if (
             meta_sp
             and meta_sp not in ("allgemein", "")
@@ -244,12 +295,25 @@ def _pick_relevant_sources(metas, faculty: str, study_program: str, max_sources:
 
 def enforce_source_policy(
     response_text: str,
-    metas,
+    metas: List[Dict[str, Any]],
     faculty: str,
     study_program: str,
     question: str,
-    item: dict,
-):
+    item: Dict[str, Any],
+) -> str:
+    """Enforces strict source formatting and filters irrelevant sources.
+
+    Args:
+        response_text: Generated response text.
+        metas: Retrieved metadata.
+        faculty: Faculty filter.
+        study_program: Study program filter.
+        question: User question.
+        item: Question metadata.
+
+    Returns:
+        The response with enforced source formatting.
+    """
     text = (response_text or "").strip()
     if text.startswith("FEHLER:"):
         return text
@@ -271,7 +335,6 @@ def enforce_source_policy(
     if not sources:
         return "Dazu liegen mir keine Informationen vor."
 
-    # Studienverlaufsplan-URL anhängen, wenn PO-Dokument als Quelle und Metadaten den Link enthalten
     q_lower = (question or "").lower()
     svp_keywords = [
         "studienverlauf",
@@ -295,13 +358,31 @@ def enforce_source_policy(
     return f"{body}{sources_block}".strip()
 
 
-def load_questions(filepath="data/improved_test_questions.json"):
+def load_questions(
+    filepath: str = "data/improved_test_questions.json",
+) -> List[Dict[str, Any]]:
+    """Loads evaluation questions from a JSON file.
+
+    Args:
+        filepath: Path to the JSON file.
+
+    Returns:
+        A list of question dictionaries.
+    """
     with open(filepath, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
-def build_tasks(phase, questions):
-    # Baut die Task-Liste basierend auf der gewählten Phase.
+def build_tasks(phase: int, questions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Builds the list of evaluation tasks based on the phase.
+
+    Args:
+        phase: Evaluation phase number.
+        questions: List of questions.
+
+    Returns:
+        A list of task dictionaries.
+    """
     tasks = []
 
     if phase in (1, 2):
@@ -330,9 +411,9 @@ def build_tasks(phase, questions):
         for model_cfg in PHASE3_MODELS:
             model_name = model_cfg["model"]
             best = PHASE3_BEST_CONFIGS.get(model_name, {})
-            temp = best.get("temperature", 0.0)
-            rp = best.get("repeat_penalty", 1.0)
-            tk = best.get("top_k", 7)
+            temp = float(best.get("temperature", 0.0))
+            rp = float(best.get("repeat_penalty", 1.0))
+            tk = int(best.get("top_k", 7))
             for q in questions:
                 tasks.append(
                     {
@@ -355,9 +436,9 @@ def build_tasks(phase, questions):
             model_name = model_cfg["model"]
             if provider == "local":
                 best = PHASE3_BEST_CONFIGS.get(model_name, {})
-                temp = best.get("temperature", 0.0)
-                rp = best.get("repeat_penalty", 1.0)
-                tk = best.get("top_k", 7)
+                temp = float(best.get("temperature", 0.0))
+                rp = float(best.get("repeat_penalty", 1.0))
+                tk = int(best.get("top_k", 7))
                 for q in questions:
                     tasks.append(
                         {
@@ -375,7 +456,7 @@ def build_tasks(phase, questions):
                     )
             else:
                 cloud_cfg = PHASE4_CLOUD_CONFIGS.get(model_name, {})
-                temp = cloud_cfg.get("temperature", 0.0)
+                temp = float(cloud_cfg.get("temperature", 0.0))
                 for q in questions:
                     tasks.append(
                         {
@@ -412,20 +493,32 @@ def build_tasks(phase, questions):
     return tasks
 
 
-def get_csv_path(phase):
+def get_csv_path(phase: int) -> str:
+    """Returns the CSV file path for a given phase.
+
+    Args:
+        phase: Phase number.
+
+    Returns:
+        File path string.
+    """
     return {1: PHASE1_CSV, 2: PHASE2_CSV, 3: PHASE3_CSV, 4: PHASE4_CSV, 5: PHASE5_CSV}[
         phase
     ]
 
 
-def run_evaluation(phase):
-    # Führt die Evaluierung für die angegebene Phase durch.
+def run_evaluation(phase: int) -> None:
+    """Runs the full evaluation pipeline for a specific phase.
+
+    Args:
+        phase: Phase number.
+    """
     phase_names = {
         1: "Phase 1: Kleine Modelle Grid Search (7B)",
         2: "Phase 2: Große Modelle Grid Search (14B)",
         3: "Phase 3: Head-to-Head (beste Configs)",
         4: "Phase 4: Lokale vs Cloud",
-        5: "Phase 5: Fine-Grained Top-K (qwen2.5:14b mit top_k=6, ergänzt Phase 2 K=5/7)",
+        5: "Phase 5: Fine-Grained Top-K (qwen2.5:14b)",
     }
     print(f"\n{'='*60}")
     print(f"  {phase_names[phase]}")
@@ -436,7 +529,7 @@ def run_evaluation(phase):
     questions = load_questions()
     tasks = build_tasks(phase, questions)
 
-    print(f"Anzahl Tasks: {len(tasks)}")
+    print(f"Number of tasks: {len(tasks)}")
     print(f"Output: {get_csv_path(phase)}\n")
 
     results = []
@@ -507,7 +600,7 @@ def run_evaluation(phase):
                 "hallucination_free": False,
                 "source_format_correct": False,
                 "instruction_following": False,
-                "response_length": len(response_text),
+                "response_length": len(response_text) if isinstance(response_text, str) else 0,
                 "context_usage_percent": 0.0,
             }
         else:
@@ -577,30 +670,14 @@ def run_evaluation(phase):
     with open(summary_file, "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2, ensure_ascii=False)
 
-    print(f"\nPhase {phase} abgeschlossen.")
-    print(f"Ergebnisse: {csv_file}")
-    print(f"Zusammenfassung: {summary_file}")
-    print(f"Durchschnittlicher Score: {summary.get('average_score', 0):.1f}/100")
-    print(f"Raten der Fallbacks: {summary.get('fallback_rate', 0):.1%}")
-    print(
-        f"Gesamtzahl der Evals: {len(results)} (davon {len(results)-len(scored_results)} Fehler)"
-    )
+    print(f"\nPhase {phase} finished.")
+    print(f"Results: {csv_file}")
+    print(f"Summary: {summary_file}")
+    print(f"Average score: {summary.get('average_score', 0):.1f}/100")
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2 or sys.argv[1] not in ("1", "2", "3", "4", "5"):
-        print("Nutzung: python evaluate_rag.py <phase>")
-        print("  1 = Kleine Modelle Grid Search (gemma2, qwen2.5, mistral, llama3.1)")
-        print("      4 Modelle x 36 Configs x 21 Fragen = 3024 Evals")
-        print("  2 = Große Modelle Grid Search (phi4, qwen2.5:14b)")
-        print("      2 Modelle x 36 Configs x 21 Fragen = 1512 Evals")
-        print("  3 = Head-to-Head (beste Config pro Modell aus Phase 1+2)")
-        print("      6 Modelle x 1 Config x 21 Fragen = 126 Evals")
-        print("  4 = Lokale vs Cloud (beste Lokale + Gemini + Groq)")
-        print("      4 Modelle x 1 Config x 21 Fragen = 84 Evals")
-        print(
-            "  5 = Fine-Grained Top-K (qwen2.5:14b mit top_k=6, ergänzt Phase 2 K=5/7)"
-        )
-        print("      1 Modell x 1 Top-K x 3 Temps x 3 RP x 21 Fragen = 189 Evals")
+        print("Usage: python evaluate_rag.py <phase>")
         sys.exit(1)
     run_evaluation(int(sys.argv[1]))
