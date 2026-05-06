@@ -13,6 +13,10 @@ import chromadb
 from chromadb.utils import embedding_functions
 from sentence_transformers import CrossEncoder
 from rank_bm25 import BM25Okapi
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 
 class HybridRetrievalEngine:
@@ -20,20 +24,25 @@ class HybridRetrievalEngine:
 
     def __init__(self) -> None:
         """Initializes the retrieval engine components: ChromaDB, BM25 and CrossEncoder."""
-        self.db_path: str = os.path.join("data", "chroma_db")
+        self.db_path: str = os.getenv("DB_PATH", os.path.join("data", "chroma_db"))
         self.client: chromadb.PersistentClient = chromadb.PersistentClient(
             path=self.db_path
         )
+        self.emb_model: str = os.getenv(
+            "EMBEDDING_MODEL", "intfloat/multilingual-e5-large"
+        )
         self.emb_func: embedding_functions.SentenceTransformerEmbeddingFunction = (
             embedding_functions.SentenceTransformerEmbeddingFunction(
-                model_name="intfloat/multilingual-e5-large"
+                model_name=self.emb_model
             )
         )
         self.collection = self.client.get_collection(
             name="th_koeln_rules", embedding_function=self.emb_func
         )
 
-        self.chunks_path: str = os.path.join("data", "chunks.json")
+        self.chunks_path: str = os.getenv(
+            "CHUNKS_PATH", os.path.join("data", "chunks.json")
+        )
         with open(self.chunks_path, "r", encoding="utf-8") as f:
             self.chunks: List[Dict[str, Any]] = json.load(f)
 
@@ -44,7 +53,10 @@ class HybridRetrievalEngine:
         ]
         self.bm25: BM25Okapi = BM25Okapi(tokenized_corpus)
 
-        self.reranker: CrossEncoder = CrossEncoder("BAAI/bge-reranker-v2-m3")
+        self.reranker_model: str = os.getenv(
+            "RERANKER_MODEL", "BAAI/bge-reranker-v2-m3"
+        )
+        self.reranker: CrossEncoder = CrossEncoder(self.reranker_model)
 
     def _normalize_study_program(self, s: str) -> str:
         """Normalizes a study program name for comparison.

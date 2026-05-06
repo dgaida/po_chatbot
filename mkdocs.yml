@@ -88,6 +88,8 @@ nav:
   - Installation: installation.md
   - Konfiguration: configuration.md
   - Nutzung: usage/index.md
+  - Bereitstellung:
+      - Render.com: deployment/render.md
   - API-Referenz: api/index.md
   - Architektur: architecture/index.md
   - Entwicklung:
