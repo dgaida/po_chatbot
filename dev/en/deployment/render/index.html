@@ -8,17 +8,17 @@
       
       
       
-        <link rel="canonical" href="https://dgaida.github.io/po_chatbot/dev/en/development/versioning/">
+        <link rel="canonical" href="https://dgaida.github.io/po_chatbot/dev/en/deployment/render/">
       
       
-        <link rel="prev" href="../docstring-guide/">
+        <link rel="prev" href="../../usage/">
       
       
-        <link rel="next" href="../changelog/">
+        <link rel="next" href="../../api/">
       
       
         
-          <link rel="alternate" href="../../../development/versioning/" hreflang="de">
+          <link rel="alternate" href="../../../deployment/render/" hreflang="de">
         
           <link rel="alternate" href="./" hreflang="en">
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>Versionierung - PO-Chatbot (TH Köln)</title>
+        <title>Render.com - PO-Chatbot (TH Köln)</title>
       
     
     
@@ -84,7 +84,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#versioning" class="md-skip">
+        <a href="#deployment-on-rendercom" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Versionierung
+              Render.com
             
           </span>
         </div>
@@ -169,7 +169,7 @@
       <ul class="md-select__list">
         
           <li class="md-select__item">
-            <a href="../../../development/versioning/" hreflang="de" class="md-select__link">
+            <a href="../../../deployment/render/" hreflang="de" class="md-select__link">
               Deutsch
             </a>
           </li>
@@ -357,11 +357,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../deployment/render/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
           
   
   
@@ -415,13 +417,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../development/" class="md-tabs__link">
           
   
   
@@ -655,28 +655,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
-        
-          
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
@@ -694,7 +697,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -709,10 +712,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../deployment/render/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Render.com
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -728,6 +758,92 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#blueprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Blueprint
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment Variables
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-persistence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Persistence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ingestion-on-render" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ingestion on Render
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -798,31 +914,28 @@
       
   
   
-    
   
   
-  
     
     
     
     
-      
-        
-        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
         
           
-          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
             
   
   
@@ -840,7 +953,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
@@ -858,7 +971,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="../../development/" class="md-nav__link">
         
   
   
@@ -886,7 +999,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../docstring-guide/" class="md-nav__link">
+      <a href="../../development/docstring-guide/" class="md-nav__link">
         
   
   
@@ -911,37 +1024,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Versionierung
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../development/versioning/" class="md-nav__link">
         
   
   
@@ -957,65 +1043,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#documentation-versioning-with-mike" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Documentation Versioning with mike
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Documentation Versioning with mike">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#publishing-a-new-version" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Publishing a New Version
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#code-versioning" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Code Versioning
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1028,7 +1055,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../changelog/" class="md-nav__link">
+      <a href="../../development/changelog/" class="md-nav__link">
         
   
   
@@ -1137,38 +1164,65 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#documentation-versioning-with-mike" class="md-nav__link">
+  <a href="#prerequisites" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Documentation Versioning with mike
+        Prerequisites
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Documentation Versioning with mike">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#publishing-a-new-version" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Publishing a New Version
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#code-versioning" class="md-nav__link">
+  <a href="#blueprint" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Code Versioning
+        Blueprint
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment Variables
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-persistence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Persistence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ingestion-on-render" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ingestion on Render
       
     </span>
   </a>
@@ -1195,22 +1249,72 @@
   
 
 
-<h1 id="versioning">Versioning<a class="headerlink" href="#versioning" title="Permanent link">&para;</a></h1>
-<p>This project uses <code>mike</code> to manage multiple versions of the documentation and <code>dgaida/auto-version-action</code> for automated code versioning.</p>
-<h2 id="documentation-versioning-with-mike">Documentation Versioning with <code>mike</code><a class="headerlink" href="#documentation-versioning-with-mike" title="Permanent link">&para;</a></h2>
-<p>We provide documentation for different releases.</p>
+<h1 id="deployment-on-rendercom">Deployment on Render.com<a class="headerlink" href="#deployment-on-rendercom" title="Permanent link">&para;</a></h1>
+<p>This guide describes how to deploy the PO-Chatbot on <a href="https://render.com">Render.com</a>.</p>
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong><code>latest</code></strong>: Always points to the documentation of the <code>main</code> branch.  </li>
-<li><strong><code>vX.Y.Z</code></strong>: Specific versions that correspond to Git tags.  </li>
+<li>A GitHub account containing the chatbot repository.</li>
+<li>A Render.com account.</li>
+<li>An externally accessible Ollama endpoint (as Render doesn't offer GPUs for free instances and local LLMs would be too slow or exceed RAM).</li>
 </ul>
-<h3 id="publishing-a-new-version">Publishing a New Version<a class="headerlink" href="#publishing-a-new-version" title="Permanent link">&para;</a></h3>
-<p>To manually create a new version of the documentation:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>mike<span class="w"> </span>deploy<span class="w"> </span>--push<span class="w"> </span>--update-aliases<span class="w"> </span><span class="m">1</span>.1.0<span class="w"> </span>latest
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>mike<span class="w"> </span>set-default<span class="w"> </span>--push<span class="w"> </span>latest
-</code></pre></div></p>
-<h2 id="code-versioning">Code Versioning<a class="headerlink" href="#code-versioning" title="Permanent link">&para;</a></h2>
-<p>We follow the Semantic Versioning (SemVer) scheme.
-Versions are automatically bumped through Conventional Commits and GitHub Actions.</p>
+<h2 id="blueprint">Blueprint<a class="headerlink" href="#blueprint" title="Permanent link">&para;</a></h2>
+<p>The repository contains a <code>render.yaml</code> which serves as a blueprint. It defines two web services:</p>
+<ol>
+<li><strong>po-chatbot-student</strong>: The interface for students.</li>
+<li><strong>po-chatbot-admin</strong>: The dashboard for the examination office.</li>
+</ol>
+<h2 id="deployment-steps">Deployment Steps<a class="headerlink" href="#deployment-steps" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Log in to Render.com.</li>
+<li>Click <strong>"New +"</strong> and select <strong>"Blueprint"</strong>.</li>
+<li>Connect your GitHub repository.</li>
+<li>Render will automatically detect the <code>render.yaml</code> and suggest creating the services.</li>
+<li>Provide the required environment variables (see below).</li>
+<li>Click <strong>"Apply"</strong>.</li>
+</ol>
+<h2 id="environment-variables">Environment Variables<a class="headerlink" href="#environment-variables" title="Permanent link">&para;</a></h2>
+<p>The following variables must or can be configured:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Variable</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>OLLAMA_URL</code></td>
+<td style="text-align: left;">The URL to your Ollama endpoint.</td>
+<td style="text-align: left;">(Placeholder)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>MODEL_NAME</code></td>
+<td style="text-align: left;">The model to be used.</td>
+<td style="text-align: left;"><code>qwen2.5:14b</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TEMPERATURE</code></td>
+<td style="text-align: left;">Generation creativity.</td>
+<td style="text-align: left;"><code>0.0</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>MAX_CONCURRENT</code></td>
+<td style="text-align: left;">Maximum concurrent requests.</td>
+<td style="text-align: left;"><code>1</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="data-persistence">Data Persistence<a class="headerlink" href="#data-persistence" title="Permanent link">&para;</a></h2>
+<p>Since Render web services have an ephemeral file system, changes to the <code>data/</code> directory (e.g., logs or newly indexed data) will be lost after a restart unless a <strong>Render Disk</strong> is attached.</p>
+<p>For production use, it is recommended to:
+- Add a <strong>Render Blueprint Disk</strong> to <code>render.yaml</code>.
+- Or index the data locally before deployment and commit it to the repository (not recommended for large databases).</p>
+<h2 id="ingestion-on-render">Ingestion on Render<a class="headerlink" href="#ingestion-on-render" title="Permanent link">&para;</a></h2>
+<p>If you want to index data on Render, you can open a <strong>Shell</strong> in the Render console and run:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">$PYTHONPATH</span>:<span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/src/po_chatbot
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python<span class="w"> </span>src/po_chatbot/ingest_data.py
+</code></pre></div>
 
 
 

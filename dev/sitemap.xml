@@ -57,6 +57,13 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/deven/architecture/"/>
     </url>
     <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/deployment/render/</loc>
+        <lastmod>2026-05-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/dev/deployment/render/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/deven/deployment/render/"/>
+    </url>
+    <url>
         <loc>https://dgaida.github.io/po_chatbot/dev/development/</loc>
         <lastmod>2026-05-06</lastmod>
         <changefreq>daily</changefreq>
@@ -146,6 +153,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/dev/en/architecture/"/>
         <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/devarchitecture/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/po_chatbot/dev/en/deployment/render/</loc>
+        <lastmod>2026-05-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/po_chatbot/dev/en/deployment/render/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/po_chatbot/devdeployment/render/"/>
     </url>
     <url>
         <loc>https://dgaida.github.io/po_chatbot/dev/en/development/</loc>
