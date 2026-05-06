@@ -7,7 +7,7 @@ and applies a Cross-Encoder for re-ranking. Uses strict metadata filtering.
 import os
 import json
 import re
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 import chromadb
 from chromadb.utils import embedding_functions

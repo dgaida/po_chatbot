@@ -7,7 +7,7 @@ by staff members.
 import os
 import json
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple
 import gradio as gr
 
 # File paths (shared with chatbot_student.py)

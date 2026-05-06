@@ -174,7 +174,9 @@ def answer_question(question: str, faculty: str, study_program: str) -> Tuple[st
             _queue_count -= 1
 
 
-def _process_question(question: str, faculty: str, study_program: str) -> Tuple[str, str]:
+def _process_question(
+    question: str, faculty: str, study_program: str
+) -> Tuple[str, str]:
     """Internal processing of the question after queue slot is granted.
 
     Args:
@@ -341,8 +343,8 @@ with gr.Blocks(title="TH Köln Prüfungsamt-Assistent") as demo:
             return gr.update(
                 value=f'<div style="background:#e8f4fd; border:1px solid #0b3d91; '
                 f'border-radius:6px; padding:10px 15px; margin:10px 0;">⏳ '
-                f'<strong>{waiting} Anfrage(n) in der Warteschlange</strong> — '
-                f'geschätzte Wartezeit: ~{est_wait}s</div>',
+                f"<strong>{waiting} Anfrage(n) in der Warteschlange</strong> — "
+                f"geschätzte Wartezeit: ~{est_wait}s</div>",
                 visible=True,
             )
         return gr.update(value="", visible=False)

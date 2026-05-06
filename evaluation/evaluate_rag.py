@@ -219,7 +219,9 @@ def generate_with_ollama_direct(
         return f"FEHLER: Lokaler Ollama Absturz - {e}"
 
 
-def _needs_multiple_sources(question: str, item: Optional[Dict[str, Any]] = None) -> bool:
+def _needs_multiple_sources(
+    question: str, item: Optional[Dict[str, Any]] = None
+) -> bool:
     """Checks if the question likely requires multiple source documents.
 
     Args:
@@ -600,7 +602,9 @@ def run_evaluation(phase: int) -> None:
                 "hallucination_free": False,
                 "source_format_correct": False,
                 "instruction_following": False,
-                "response_length": len(response_text) if isinstance(response_text, str) else 0,
+                "response_length": (
+                    len(response_text) if isinstance(response_text, str) else 0
+                ),
                 "context_usage_percent": 0.0,
             }
         else:
