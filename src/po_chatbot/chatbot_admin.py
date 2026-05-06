@@ -302,4 +302,8 @@ with gr.Blocks(title="Prüfungsamt — Human-in-the-Loop Dashboard") as demo:
 
 
 if __name__ == "__main__":
-    demo.launch(share=False, server_name="0.0.0.0", server_port=int(os.getenv("ADMIN_PORT", "7861")))
+    demo.launch(
+        share=False,
+        server_name="0.0.0.0",
+        server_port=int(os.getenv("ADMIN_PORT", "7861")),
+    )

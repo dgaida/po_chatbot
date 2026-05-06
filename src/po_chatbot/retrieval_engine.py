@@ -40,7 +40,9 @@ class HybridRetrievalEngine:
             name="th_koeln_rules", embedding_function=self.emb_func
         )
 
-        self.chunks_path: str = os.getenv("CHUNKS_PATH", os.path.join("data", "chunks.json"))
+        self.chunks_path: str = os.getenv(
+            "CHUNKS_PATH", os.path.join("data", "chunks.json")
+        )
         with open(self.chunks_path, "r", encoding="utf-8") as f:
             self.chunks: List[Dict[str, Any]] = json.load(f)
 
